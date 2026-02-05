@@ -1,0 +1,159 @@
+"use client";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "@/redux/store";
+import { logout } from "@/redux/slices/user.slice";
+import apiHelper from "@/helper/axios-helper";
+import toast from "react-hot-toast";
+import { Package, LogOut, ShoppingCart, User, Heart } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { WishlistSidebar } from "@/components/wishlist-sidebar";
+import { CartSidebar } from "@/components/cart-sidebar";
+
+const Navbar = () => {
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const dispatch = useDispatch();
+  const { user, isAuthenticated } = useSelector(
+    (state: RootState) => state.user
+  );
+
+  const wishlist = useSelector((state: RootState) => state.wishlist.wishlist);
+
+  const handleLogout = async () => {
+    try {
+      toast.dismiss();
+      await apiHelper.post("/auth/logout");
+      dispatch(logout());
+      toast.success("Logged out successfully");
+      router.push("/login");
+    } catch (error: any) {
+      dispatch(logout());
+      toast.error(
+        error?.response?.data?.message ||
+          "Something went wrong while logging out"
+      );
+      router.push("/login");
+    }
+  };
+
+  const getInitials = () => {
+    if (!user) return "U";
+    return `${user.firstName?.charAt(0) || ""}${
+      user.lastName?.charAt(0) || ""
+    }`.toUpperCase();
+  };
+
+  const isOnAuthPage =
+    pathname === "/login" ||
+    pathname === "/register" ||
+    pathname === "/forgot-password";
+
+  return (
+    <header className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white">
+      <div className="container mx-auto max-w-6xl px-4 sm:px-6">
+        <div className="flex h-16 items-center justify-between gap-4">
+          <Link href="/" className="flex items-center gap-2 shrink-0">
+            <span className="text-xl font-bold text-slate-900 tracking-tight">
+              Ecommercely
+            </span>
+          </Link>
+          <div className="flex items-center gap-2">
+            <WishlistSidebar />
+
+            {isAuthenticated && <CartSidebar />}
+            {isAuthenticated ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="relative h-9 w-9 rounded-full hover:bg-slate-50"
+                  >
+                    <Avatar className="h-8 w-8 border border-slate-200">
+                      <AvatarImage
+                        src={`https://api.dicebear.com/9.x/initials/svg?seed=${user?.firstName} ${user?.lastName}`}
+                        alt={user?.firstName || "User"}
+                      />
+                      <AvatarFallback className="bg-slate-100 text-slate-600 text-xs">
+                        {getInitials()}
+                      </AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  className="w-56 bg-white border-slate-200"
+                  align="end"
+                >
+                  <DropdownMenuLabel className="font-normal">
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium text-slate-900">
+                        {user?.firstName} {user?.lastName}
+                      </p>
+                      <p className="text-xs text-slate-500">{user?.email}</p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuItem
+                    onClick={() => router.push("/my-account")}
+                    className="text-slate-600 focus:text-slate-900 focus:bg-slate-50 cursor-pointer"
+                  >
+                    <User className="mr-2 h-4 w-4" />
+                    My Account
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className="bg-slate-100" />
+                  <DropdownMenuItem
+                    onClick={() => router.push("/orders")}
+                    className="text-slate-600 focus:text-slate-900 focus:bg-slate-50 cursor-pointer"
+                  >
+                    <Package className="mr-2 h-4 w-4" />
+                    My Orders
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className="bg-slate-100" />
+                  <DropdownMenuItem
+                    onClick={handleLogout}
+                    className="text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer"
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Log out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <>
+                {!isOnAuthPage ? (
+                  <div className="hidden sm:flex gap-2">
+                    <Button
+                      variant="ghost"
+                      onClick={() => router.push("/login")}
+                      className="text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                    >
+                      Login
+                    </Button>
+                    <Button
+                      onClick={() => router.push("/register")}
+                      className="bg-slate-900 hover:bg-slate-800 text-white"
+                    >
+                      Sign Up
+                    </Button>
+                  </div>
+                ) : null}
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+};
+
+export default Navbar;
