@@ -21,7 +21,7 @@ apiHelper.interceptors.response.use(
     if (
       error.response?.status >= 400 &&
       error.response?.status < 500 &&
-      originalRequest.url?.includes("/users/auth/refresh")
+      originalRequest.url?.includes("/auth/refresh")
     ) {
       window.location.href = "/login";
       return Promise.reject(error);
@@ -30,7 +30,7 @@ apiHelper.interceptors.response.use(
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       try {
-        await apiHelper.get("/users/auth/refresh");
+        await apiHelper.get("/auth/refresh");
         return apiHelper(originalRequest);
       } catch {
         window.location.href = "/login";
