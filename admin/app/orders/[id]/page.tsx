@@ -17,7 +17,6 @@ import {
 import Link from "next/link";
 import apiHelper from "@/lib/axios-helper";
 import { Order } from "@/types/order";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -199,16 +198,18 @@ const OrderDetailsPage = () => {
                           <h4 className="font-medium line-clamp-2">
                             {item.name}
                           </h4>
-                          <div className="text-sm text-muted-foreground mt-1 space-y-1">
+                          <ul className="text-sm text-muted-foreground mt-1 space-y-1">
                             {Object.entries(item.attributes).map(
-                              ([key, value]) => (
-                                <p key={key} className="capitalize">
-                                  <span className="font-medium">{key}:</span>{" "}
-                                  {value}
-                                </p>
-                              ),
+                              ([key, value]) => {
+                                return (
+                                  <li key={key}>
+                                    {key.charAt(0).toUpperCase() + key.slice(1)}
+                                    : {value}
+                                  </li>
+                                );
+                              },
                             )}
-                          </div>
+                          </ul>
                         </div>
                         <div className="flex justify-between items-end mt-2">
                           <p className="text-sm font-medium">

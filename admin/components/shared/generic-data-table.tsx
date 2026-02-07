@@ -30,6 +30,7 @@ interface GenericDataTableProps<TData, TValue> {
   searchKey?: string;
   searchPlaceholder?: string;
   renderButtons?: React.ReactNode;
+  onRowClick?: any;
 }
 
 export function GenericDataTable<TData, TValue>({
@@ -38,10 +39,11 @@ export function GenericDataTable<TData, TValue>({
   searchKey = "name",
   searchPlaceholder = "Search...",
   renderButtons,
+  onRowClick,
 }: GenericDataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
+    [],
   );
 
   const table = useReactTable({
@@ -100,7 +102,7 @@ export function GenericDataTable<TData, TValue>({
                           ? null
                           : flexRender(
                               header.column.columnDef.header,
-                              header.getContext()
+                              header.getContext(),
                             )}
                       </TableHead>
                     );
@@ -114,7 +116,8 @@ export function GenericDataTable<TData, TValue>({
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
-                    className="group transition-colors hover:bg-blue-50/30 border-b-gray-50 last:border-0"
+                    className={`group transition-colors hover:bg-blue-50/30 border-b-gray-50 last:border-0 ${onRowClick ? "cursor-pointer" : "cursor-default"}`}
+                    onClick={() => onRowClick?.(row?.original)}
                   >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell
@@ -124,7 +127,7 @@ export function GenericDataTable<TData, TValue>({
                         <div className="text-sm text-gray-700 transition-colors">
                           {flexRender(
                             cell.column.columnDef.cell,
-                            cell.getContext()
+                            cell.getContext(),
                           )}
                         </div>
                       </TableCell>

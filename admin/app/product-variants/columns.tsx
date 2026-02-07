@@ -151,6 +151,17 @@ export const getColumns = (
     },
   },
   {
+    accessorKey: "isDefault",
+    header: "is Default Variant?",
+    size: 100,
+    cell: ({ row }) => {
+      const value = row.getValue("isDefault") as boolean;
+      return (
+        <StatusBadge activeText="Yes" inactiveText="No" isActive={value} />
+      );
+    },
+  },
+  {
     accessorKey: "isActive",
     header: "Status",
     size: 100,
