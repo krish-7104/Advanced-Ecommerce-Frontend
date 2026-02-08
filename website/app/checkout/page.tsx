@@ -7,11 +7,12 @@ import { RootState, AppDispatch } from "@/redux/store";
 import { formatPrice } from "@/helper/common-functions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, Check, MapPin } from "lucide-react"; // Added MapPin
+import { Check, MapPin, Loader2 } from "lucide-react"; // Added MapPin
 import Image from "next/image";
 import { toast } from "sonner";
 import apiHelper from "@/helper/axios-helper";
 import { fetchCart } from "@/redux/slices/cart.slice";
+import Loader from "@/components/loader";
 
 interface Address {
   id: string;
@@ -65,22 +66,6 @@ const CheckoutPage = () => {
     }
   };
 
-  const createOrder = async (addressId: string) => {
-    try {
-      const response = await apiHelper.post("/order", { addressId });
-      if (response?.data?.statusCode === 201) {
-        toast.success("Order placed successfully!");
-        // Refresh cart
-        await fetchCart(dispatch);
-        return response.data.data;
-      }
-    } catch (error: any) {
-      console.error("Failed to create order:", error);
-      toast.error(error?.response?.data?.message || "Failed to place order");
-      throw error;
-    }
-  };
-
   useEffect(() => {
     if (isAuthenticated) {
       loadAddresses();
@@ -110,17 +95,38 @@ const CheckoutPage = () => {
       toast.error("Please select a delivery address");
       return;
     }
-
     setPlacingOrder(true);
     try {
-      await createOrder(selectedAddressId);
-      router.push("/orders");
-      // Use "Order Placed" toast which is already in createOrder
-    } catch (error) {
-      // Error handled in helper
+      const response = await apiHelper.post("/order", {
+        addressId: selectedAddressId,
+      });
+      if (response?.data?.statusCode === 201) {
+        toast.success("Order placed successfully!");
+        await generatePaymentIntent(response?.data?.data?.id);
+        await fetchCart(dispatch);
+      }
+    } catch (error: any) {
+      console.error("Failed to create order:", error);
+      toast.error(error?.response?.data?.message || "Failed to place order");
+      throw error;
     } finally {
       setPlacingOrder(false);
     }
+  };
+
+  const generatePaymentIntent = async (orderId: string) => {
+    try {
+      const resp = await apiHelper.post(
+        `/payment/create-payment-intent/${orderId}`,
+      );
+      if (resp?.data?.statusCode === 200) {
+        if (resp?.data?.data?.url) {
+          window.open(resp?.data?.data?.url, "_self");
+        } else {
+          toast.error("Error in generating Payment!");
+        }
+      }
+    } catch (error) {}
   };
 
   // Calculate totals
@@ -148,8 +154,8 @@ const CheckoutPage = () => {
             </CardHeader>
             <CardContent>
               {loadingAddresses ? (
-                <div className="flex justify-center p-8">
-                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                <div className="flex justify-center h-32">
+                  <Loader />
                 </div>
               ) : addresses.length === 0 ? (
                 <div className="text-center py-8">

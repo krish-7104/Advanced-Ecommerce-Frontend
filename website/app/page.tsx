@@ -6,6 +6,7 @@ import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { HomeCategories } from "@/components/home/home-categories";
 import { HomeFeaturedProducts } from "@/components/home/home-featured-products";
+import Loader from "@/components/loader";
 
 const HomePage = () => {
   return (

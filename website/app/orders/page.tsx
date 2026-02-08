@@ -6,14 +6,8 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import apiHelper from "@/helper/axios-helper";
 import { formatPrice } from "@/helper/common-functions";
-import {
-  Loader2,
-  Package,
-  Calendar,
-  MapPin,
-  ChevronRight,
-  Clock,
-} from "lucide-react";
+import { Package, Calendar, MapPin, ChevronRight, Clock } from "lucide-react";
+import Loader from "@/components/loader";
 import Link from "next/link";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
@@ -80,7 +74,7 @@ const OrdersPage = () => {
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8 flex justify-center items-center min-h-[50vh]">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <Loader />
       </div>
     );
   }

@@ -38,6 +38,7 @@ import {
 } from "@/components/ui/dialog";
 import { Select } from "@/components/ui/select";
 import { Address } from "@/types/address.types";
+import Loader from "@/components/loader";
 
 interface Session {
   id: string;
@@ -300,7 +301,7 @@ export default function MyAccountPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-slate-600">Loading...</div>
+        <Loader />
       </div>
     );
   }
