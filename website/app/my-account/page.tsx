@@ -109,7 +109,7 @@ export default function MyAccountPage() {
 
   const [addressForm, setAddressForm] = useState({
     name: "",
-    phoneNumber: "",
+    phoneNumber: user?.phoneNumber || "",
     line1: "",
     line2: "",
     city: "",
@@ -265,7 +265,7 @@ export default function MyAccountPage() {
   const resetAddressForm = () => {
     setAddressForm({
       name: "",
-      phoneNumber: "",
+      phoneNumber: user?.phoneNumber || "",
       line1: "",
       line2: "",
       city: "",
@@ -307,7 +307,7 @@ export default function MyAccountPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 py-12">
-      <div className="container mx-auto max-w-6xl px-4 sm:px-6 max-w-4xl">
+      <div className="container mx-auto max-w-6xl px-4 sm:px-6">
         <h1 className="text-3xl font-bold text-slate-900 mb-8">My Account</h1>
 
         <div className="space-y-6">
