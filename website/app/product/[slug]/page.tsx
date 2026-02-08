@@ -125,13 +125,16 @@ const ProductDetailPage = () => {
     ? cart?.some((item) => item.variantId === selectedVariant.id)
     : false;
 
+  const currentWishlist =
+    wishlist?.find((item) => item.variantId === selectedVariant?.id) || null;
+
   const handleWishlistToggle = async () => {
     if (!selectedVariant) return;
 
     if (isInWishlist) {
       await removeFromWishlist(
         dispatch,
-        selectedVariant.id,
+        currentWishlist,
         wishlist,
         isAuthenticated,
       );

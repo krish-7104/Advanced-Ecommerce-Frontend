@@ -17,14 +17,17 @@ import { useState } from "react";
 
 const ProductCard = ({ product }: { product: ProductVariantResponse }) => {
   if (!product) return null;
-  
+
   const [addingToCart, setAddingToCart] = useState(false);
-  
+
   const wishlist = useSelector((state: RootState) => state.wishlist.wishlist);
   const cart = useSelector((state: RootState) => state.cart.cart);
   const { isAuthenticated } = useSelector((state: RootState) => state.user);
   const isInWishlist = wishlist?.some((item) => item.variantId === product.id);
   const isInCart = cart?.some((item) => item.variantId === product.id);
+
+  const currentWishlist =
+    wishlist?.find((item) => item.variantId === product.id) || null;
 
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
@@ -32,15 +35,10 @@ const ProductCard = ({ product }: { product: ProductVariantResponse }) => {
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     try {
       setAddingToCart(true);
-      await addToCart(
-        dispatch,
-        product.id,
-        1,
-        isAuthenticated
-      );
+      await addToCart(dispatch, product.id, 1, isAuthenticated);
     } catch (error) {
       console.error("Failed to add to cart:", error);
     } finally {
@@ -80,7 +78,7 @@ const ProductCard = ({ product }: { product: ProductVariantResponse }) => {
               </span>
             )}
           </div>
-          
+
           <Button
             variant="ghost"
             size="icon"
@@ -91,16 +89,16 @@ const ProductCard = ({ product }: { product: ProductVariantResponse }) => {
               if (isInWishlist) {
                 await removeFromWishlist(
                   dispatch,
-                  product.id,
+                  currentWishlist,
                   wishlist,
-                  isAuthenticated
+                  isAuthenticated,
                 );
               } else {
                 await addToWishlist(
                   dispatch,
                   product.id,
                   wishlist,
-                  isAuthenticated
+                  isAuthenticated,
                 );
               }
             }}
@@ -108,32 +106,36 @@ const ProductCard = ({ product }: { product: ProductVariantResponse }) => {
             <Heart
               className={cn(
                 "h-4 w-4",
-                isInWishlist && "fill-red-500 text-red-500"
+                isInWishlist && "fill-red-500 text-red-500",
               )}
             />
           </Button>
-          
+
           {/* Add to Cart Button */}
           {isInCart ? (
-             <Button 
-              className="w-full mt-3 bg-emerald-600 hover:bg-emerald-700" 
-              onClick={(e) => { e.preventDefault(); e.stopPropagation(); router.push('/cart'); }}
+            <Button
+              className="w-full mt-3 bg-emerald-600 hover:bg-emerald-700"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                router.push("/cart");
+              }}
             >
               <Check className="h-4 w-4 mr-2" />
               Added in Cart
             </Button>
           ) : (
-            <Button 
-              className="w-full mt-3" 
+            <Button
+              className="w-full mt-3"
               onClick={handleAddToCart}
               disabled={addingToCart || product.stockAvailable === 0}
             >
               <ShoppingCart className="h-4 w-4 mr-2" />
-              {addingToCart 
-                ? "Adding..." 
-                : product.stockAvailable === 0 
-                ? "Out of Stock" 
-                : "Add to Cart"}
+              {addingToCart
+                ? "Adding..."
+                : product.stockAvailable === 0
+                  ? "Out of Stock"
+                  : "Add to Cart"}
             </Button>
           )}
         </div>

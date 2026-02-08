@@ -29,7 +29,7 @@ const wishlistSlice = createSlice({
       }
       if (
         !state.wishlist.some(
-          (item) => item.variantId === action.payload.variantId
+          (item) => item.variantId === action.payload.variantId,
         )
       ) {
         state.wishlist.push({ ...action.payload, quantity: 1 });
@@ -38,7 +38,7 @@ const wishlistSlice = createSlice({
     removeItemFromWishlist(state, action: PayloadAction<string>) {
       if (state.wishlist) {
         state.wishlist = state.wishlist.filter(
-          (item) => item.variantId !== action.payload
+          (item) => item.variantId !== action.payload,
         );
       }
     },
@@ -79,7 +79,7 @@ export const addToWishlist = async (
   dispatch: AppDispatch,
   variantId: string,
   currentWishlist: WishlistItem[] | null,
-  isAuthenticated: boolean = false
+  isAuthenticated: boolean = false,
 ) => {
   if (!isAuthenticated) {
     toast.error("Please login to add items to wishlist");
@@ -94,36 +94,43 @@ export const addToWishlist = async (
 
   try {
     const response = await apiHelper.post("/wishlist", { variantId });
-    
-    if (response?.data?.statusCode === 200 || response?.data?.statusCode === 201) {
+
+    if (
+      response?.data?.statusCode === 200 ||
+      response?.data?.statusCode === 201
+    ) {
       await fetchWishlist(dispatch);
       toast.success("Item added to wishlist");
     }
   } catch (error: any) {
     console.error("Failed to add item to wishlist:", error);
-    toast.error(error?.response?.data?.message || "Failed to add item to wishlist");
+    toast.error(
+      error?.response?.data?.message || "Failed to add item to wishlist",
+    );
     throw error;
   }
 };
 
 export const removeFromWishlist = async (
   dispatch: AppDispatch,
-  variantId: string,
+  selectedWishlist: WishlistItem | null,
   currentWishlist: WishlistItem[] | null,
-  isAuthenticated: boolean = false
+  isAuthenticated: boolean = false,
 ) => {
   if (!isAuthenticated) {
     toast.error("Please login to manage your wishlist");
     return;
   }
 
-  try {
-    await apiHelper.delete(`/wishlist/${variantId}`);
-    await fetchWishlist(dispatch);
-    toast.success("Item removed from wishlist");
-  } catch (error: any) {
-    console.error("Failed to remove item from wishlist:", error);
-    toast.error(error?.response?.data?.message || "Failed to remove item");
-    throw error;
+  if (selectedWishlist?.id) {
+    try {
+      await apiHelper.delete(`/wishlist/${selectedWishlist.id}`);
+      await fetchWishlist(dispatch);
+      toast.success("Item removed from wishlist");
+    } catch (error: any) {
+      console.error("Failed to remove item from wishlist:", error);
+      toast.error(error?.response?.data?.message || "Failed to remove item");
+      throw error;
+    }
   }
 };
