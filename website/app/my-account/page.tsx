@@ -376,7 +376,7 @@ export default function MyAccountPage() {
               </div>
               <Button
                 onClick={handleUpdatePersonalDetails}
-                className="mt-6 bg-slate-900 hover:bg-slate-800"
+                className="mt-6 bg-blue-600 hover:bg-blue-700"
               >
                 Save Changes
               </Button>
@@ -393,7 +393,7 @@ export default function MyAccountPage() {
                 <Button
                   onClick={() => openAddressDialog()}
                   size="sm"
-                  className="bg-slate-900 hover:bg-slate-800"
+                  className="bg-blue-600 hover:bg-blue-700"
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   Add Address
@@ -411,7 +411,7 @@ export default function MyAccountPage() {
                   {addresses.map((address) => (
                     <div
                       key={address.id}
-                      className="border border-slate-200 rounded-lg p-4 bg-white"
+                      className="border border-slate-100 rounded-md p-4 bg-white"
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
@@ -420,7 +420,7 @@ export default function MyAccountPage() {
                               {address.name}
                             </h3>
                             {address.isDefault && (
-                              <span className="px-2 py-1 text-xs bg-slate-900 text-white rounded">
+                              <span className="px-2 py-1 text-xs bg-blue-600 text-white rounded-sm">
                                 Default
                               </span>
                             )}
@@ -498,7 +498,7 @@ export default function MyAccountPage() {
                   {sessions.map((session) => (
                     <div
                       key={session.id}
-                      className="border border-slate-200 rounded-lg p-4 bg-white flex items-center justify-between"
+                      className="border border-slate-100 rounded-md p-4 bg-white flex items-center justify-between"
                     >
                       <div>
                         <p className="text-sm font-medium text-slate-900">
@@ -704,7 +704,7 @@ export default function MyAccountPage() {
             </Button>
             <Button
               onClick={handleSaveAddress}
-              className="bg-slate-900 hover:bg-slate-800"
+              className="bg-blue-600 hover:bg-blue-700"
             >
               {editingAddress ? "Update" : "Add"} Address
             </Button>

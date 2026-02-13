@@ -5,6 +5,7 @@ import { Toaster } from "sonner";
 import ReduxProvider from "@/redux/provider";
 import Header from "@/components/navbar";
 import { AuthInitializer } from "@/components/auth-initializer";
+import { SiteFooter } from "@/components/layout/site-footer";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -43,7 +44,8 @@ export default function RootLayout({
         <ReduxProvider>
           <AuthInitializer />
           <Header />
-          <main className="min-h-screen">{children}</main>
+          <main className="min-h-screen flex flex-col">{children}</main>
+          <SiteFooter />
           <Toaster position="bottom-right" richColors />
         </ReduxProvider>
       </body>

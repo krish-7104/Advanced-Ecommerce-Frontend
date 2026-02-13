@@ -88,14 +88,14 @@ export const CartSidebar = () => {
         >
           <ShoppingCart className="h-5 w-5" />
           {count > 0 && (
-            <span className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center rounded-full bg-slate-900 text-white text-xs font-medium">
+            <span className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center rounded-full bg-blue-600 text-white text-xs font-medium">
               {count > 99 ? "99+" : count}
             </span>
           )}
         </Button>
       </SheetTrigger>
       <SheetContent side="right" className="flex flex-col p-0 w-full sm:max-w-md">
-        <SheetHeader className="px-6 py-4 border-b border-slate-200">
+        <SheetHeader className="px-6 py-4 border-b border-slate-100">
           <div className="flex items-center justify-between">
             <SheetTitle>Cart ({count})</SheetTitle>
             {count > 0 && (
@@ -128,7 +128,7 @@ export const CartSidebar = () => {
                 return (
                   <div
                     key={item.variantId}
-                    className="relative border border-slate-200 rounded-lg p-3"
+                    className="relative border border-slate-100 rounded-md p-3"
                   >
                     {/* Remove button */}
                     <button
@@ -180,7 +180,7 @@ export const CartSidebar = () => {
                         
                         {/* Quantity Controls */}
                         <div className="mt-2 flex items-center justify-between">
-                          <div className="flex items-center border border-slate-300 rounded-md">
+                          <div className="flex items-center border border-slate-100 rounded-sm">
                             <button
                               onClick={() => handleUpdateQuantity(item.variantId, item.quantity - 1)}
                               disabled={isUpdating || item.quantity <= 1}
@@ -188,7 +188,7 @@ export const CartSidebar = () => {
                             >
                               -
                             </button>
-                            <span className="px-3 py-1 text-sm font-medium text-slate-900 border-x border-slate-300 min-w-[40px] text-center">
+                            <span className="px-3 py-1 text-sm font-medium text-slate-900 border-x border-slate-100 min-w-[40px] text-center">
                               {item.quantity}
                             </span>
                             <button
@@ -212,7 +212,7 @@ export const CartSidebar = () => {
           )}
         </div>
         {items.length > 0 && (
-          <div className="border-t border-slate-200 px-6 py-4 bg-white space-y-3">
+          <div className="border-t border-slate-100 px-6 py-4 bg-white space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-base font-semibold text-slate-900">Total</span>
               <span className="text-lg font-bold text-slate-900">

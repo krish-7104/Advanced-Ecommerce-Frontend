@@ -40,7 +40,7 @@ const CategoriesPage = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-white">
-        <div className="border-b border-slate-200">
+        <div className="border-b border-slate-100">
           <div className="container mx-auto max-w-6xl px-4 sm:px-6 py-6">
             <Skeleton className="h-4 w-32 mb-3" />
             <Skeleton className="h-8 w-48" />
@@ -97,7 +97,7 @@ const CategoriesPage = () => {
                       className="flex items-center gap-3 group"
                     >
                       {parent.image?.url ? (
-                        <div className="w-12 h-12 rounded-lg overflow-hidden bg-slate-50 border border-slate-100 shrink-0">
+                        <div className="w-12 h-12 rounded-lg overflow-hidden bg-slate-50 border border-slate-50 shrink-0">
                           <Image
                             src={parent.image.url}
                             alt={parent.name}
@@ -107,7 +107,7 @@ const CategoriesPage = () => {
                           />
                         </div>
                       ) : (
-                        <div className="w-12 h-12 rounded-lg bg-slate-100 flex items-center justify-center border border-slate-200 shrink-0">
+                        <div className="w-12 h-12 rounded-lg bg-slate-100 flex items-center justify-center border border-slate-100 shrink-0">
                           <Grid3X3 className="h-6 w-6 text-slate-400" />
                         </div>
                       )}
@@ -131,7 +131,7 @@ const CategoriesPage = () => {
                           href={`/category/${sub.id}`}
                           className="shrink-0 w-28 group"
                         >
-                          <div className="aspect-square rounded-lg bg-slate-50 overflow-hidden mb-2 border border-slate-100 relative">
+                          <div className="aspect-square rounded-lg bg-slate-50 overflow-hidden mb-2 border border-slate-50 relative">
                             {sub.image?.url ? (
                               <Image
                                 src={sub.image.url}

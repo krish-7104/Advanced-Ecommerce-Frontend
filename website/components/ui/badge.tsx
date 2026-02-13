@@ -17,10 +17,10 @@ export function Badge({
   className,
 }: BadgeProps) {
   const variantClasses = {
-    default: "bg-slate-900 text-white",
-    discount: "bg-slate-900 text-white",
+    default: "bg-blue-600 text-white",
+    discount: "bg-blue-600 text-white",
     stock: "bg-slate-100 text-slate-600",
-    outline: "bg-white border border-slate-300 text-slate-700",
+    outline: "bg-white border border-slate-100 text-slate-700",
   };
 
   const sizeClasses = {
@@ -31,7 +31,7 @@ export function Badge({
   return (
     <span
       className={cn(
-        "inline-flex items-center font-medium rounded",
+        "inline-flex items-center font-medium rounded-sm",
         variantClasses[variant],
         sizeClasses[size],
         className

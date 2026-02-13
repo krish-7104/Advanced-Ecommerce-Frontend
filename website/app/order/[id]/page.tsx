@@ -112,7 +112,7 @@ export default function OrderDetailsPage() {
       <div className="container mx-auto max-w-4xl px-4 sm:px-6">
         {/* Payment Status Banner */}
         {paymentStatus === "success" && (
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6 flex items-start gap-3">
+          <div className="bg-green-50 border border-green-100 rounded-md p-4 mb-6 flex items-start gap-3">
             <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5" />
             <div>
               <h3 className="font-semibold text-green-900">
@@ -126,7 +126,7 @@ export default function OrderDetailsPage() {
         )}
 
         {paymentStatus === "failure" && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 flex items-start gap-3">
+          <div className="bg-red-50 border border-red-100 rounded-md p-4 mb-6 flex items-start gap-3">
             <XCircle className="h-5 w-5 text-red-600 mt-0.5" />
             <div>
               <h3 className="font-semibold text-red-900">Payment Failed</h3>
@@ -153,7 +153,7 @@ export default function OrderDetailsPage() {
         <div className="grid gap-6">
           {/* Order Info Card */}
           <Card>
-            <CardHeader className="bg-slate-50 border-b border-slate-100 py-4">
+            <CardHeader className="bg-slate-50 border-b border-slate-50 py-4">
               <div className="flex flex-col sm:flex-row justify-between gap-4 text-sm">
                 <div>
                   <p className="text-slate-500 mb-1">Order ID</p>
@@ -185,7 +185,7 @@ export default function OrderDetailsPage() {
               <div className="space-y-6">
                 {order.items.map((item) => (
                   <div key={item.id} className="flex gap-4">
-                    <div className="relative h-20 w-20 bg-slate-100 rounded-md overflow-hidden shrink-0 border border-slate-200">
+                    <div className="relative h-20 w-20 bg-slate-100 rounded-md overflow-hidden shrink-0 border border-slate-100">
                       {item.variant?.image?.url ? (
                         <Image
                           src={item.variant.image.url}

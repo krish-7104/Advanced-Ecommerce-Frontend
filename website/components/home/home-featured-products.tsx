@@ -34,25 +34,18 @@ export const HomeFeaturedProducts = () => {
 
   if (loading) {
     return (
-      <section className="py-12 border-b border-slate-100">
-        <div className="container mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold text-slate-900">
-              Featured Products
-            </h2>
-            <Link
-              href="/products"
-              className="text-sm text-slate-500 hover:text-slate-700 flex items-center gap-1"
-            >
-              View All <ChevronRight className="h-4 w-4" />
-            </Link>
+      <section className="py-16 border-b border-slate-100">
+        <div className="container max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-2xl font-bold text-slate-900">Featured Products</h2>
+            <Skeleton className="h-5 w-24 rounded-xl" />
           </div>
-          <div className="grid grid-cols-3 gap-4">
-            {Array.from({ length: 3 }).map((_, i) => (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+            {Array.from({ length: 4 }).map((_, i) => (
               <div key={i}>
-                <Skeleton className="aspect-square rounded-lg mb-4" />
-                <Skeleton className="h-4 w-3/4 mb-2" />
-                <Skeleton className="h-4 w-1/2" />
+                <Skeleton className="aspect-square rounded-2xl mb-4" />
+                <Skeleton className="h-4 w-3/4 mb-2 rounded-lg" />
+                <Skeleton className="h-5 w-1/2 rounded-lg" />
               </div>
             ))}
           </div>
@@ -66,25 +59,21 @@ export const HomeFeaturedProducts = () => {
   }
 
   return (
-    <section className="py-12 border-b border-slate-100">
-      <div className="container mx-auto max-w-6xl px-4 sm:px-6">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-slate-900">
-            Featured Products
-          </h2>
+    <section className="py-16 border-b border-slate-100">
+      <div className="container max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-2xl font-bold text-slate-900">Featured Products</h2>
           <Link
             href="/products"
-            className="text-sm text-slate-500 hover:text-slate-700 flex items-center gap-1"
+            className="text-sm font-medium text-primary hover:text-primary/90 flex items-center gap-1 transition-all duration-200"
           >
             View All <ChevronRight className="h-4 w-4" />
           </Link>
         </div>
-        <div className="grid grid-cols-4 gap-4">
-          {products && products.length
-            ? products.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))
-            : null}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+          {products.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
         </div>
       </div>
     </section>

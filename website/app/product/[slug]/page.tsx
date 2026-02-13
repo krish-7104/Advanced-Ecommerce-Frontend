@@ -158,16 +158,16 @@ const ProductDetailPage = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-white">
-        <div className="container mx-auto max-w-6xl px-4 sm:px-6 py-10">
-          <div className="animate-pulse">
-            <div className="h-8 w-48 bg-slate-200 rounded mb-8"></div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="aspect-square bg-slate-200 rounded-2xl"></div>
-              <div className="space-y-4">
-                <div className="h-10 w-3/4 bg-slate-200 rounded"></div>
-                <div className="h-6 w-1/2 bg-slate-200 rounded"></div>
-                <div className="h-24 bg-slate-200 rounded"></div>
-                <div className="h-12 bg-slate-200 rounded"></div>
+        <div className="container max-w-7xl mx-auto px-4 sm:px-6 py-10">
+          <div className="animate-pulse space-y-8">
+            <div className="h-5 w-48 bg-slate-100 rounded-xl" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+              <div className="aspect-square bg-slate-100 rounded-2xl" />
+              <div className="space-y-6">
+                <div className="h-9 w-3/4 bg-slate-100 rounded-xl" />
+                <div className="h-8 w-1/2 bg-slate-100 rounded-xl" />
+                <div className="h-24 bg-slate-100 rounded-2xl" />
+                <div className="h-14 bg-slate-100 rounded-2xl w-3/4" />
               </div>
             </div>
           </div>
@@ -206,8 +206,8 @@ const ProductDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="border-b border-slate-200">
-        <div className="container mx-auto max-w-6xl px-4 sm:px-6 py-6">
+      <div className="border-b border-slate-100">
+        <div className="container max-w-7xl mx-auto px-4 sm:px-6 py-6">
           <Breadcrumb
             items={[
               { label: "Products", href: "/products" },
@@ -222,11 +222,10 @@ const ProductDetailPage = () => {
         </div>
       </div>
 
-      <div className="container mx-auto max-w-6xl px-4 sm:px-6 py-10">
+      <div className="container max-w-7xl mx-auto px-4 sm:px-6 py-10">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
-          {/* Product Images */}
           <div className="space-y-4">
-            <div className="relative aspect-square bg-slate-50 rounded-2xl border border-slate-200 overflow-hidden flex items-center justify-center">
+            <div className="relative aspect-square bg-slate-50 rounded-2xl overflow-hidden flex items-center justify-center shadow-[var(--shadow-card)]">
               {selectedVariant?.image?.url ? (
                 <Image
                   src={selectedVariant.image.url}
@@ -246,7 +245,7 @@ const ProductDetailPage = () => {
                 {selectedVariant.images.map((img) => (
                   <div
                     key={img.id}
-                    className="relative aspect-square bg-slate-50 rounded-lg border border-slate-200 overflow-hidden"
+                    className="relative aspect-square bg-slate-50 rounded-xl overflow-hidden"
                   >
                     <Image
                       src={img.url}
@@ -294,7 +293,7 @@ const ProductDetailPage = () => {
             {/* Attribute Selectors */}
             {product.attributesSchema &&
               Object.keys(product.attributesSchema).length > 0 && (
-                <div className="border-t border-slate-200 pt-6 space-y-4">
+                <div className="border-t border-slate-100 pt-6 space-y-4">
                   {Object.entries(product.attributesSchema).map(
                     ([name, values]) => {
                       const availableOptions = getAvailableOptions(name);
@@ -323,12 +322,12 @@ const ProductDetailPage = () => {
                                   }
                                   disabled={!isAvailable}
                                   className={cn(
-                                    "px-4 py-2 rounded-lg border-2 font-medium transition-all text-sm",
+                                    "px-4 py-2 rounded-xl border-2 font-medium transition-all duration-200 text-sm",
                                     isSelected
-                                      ? "border-slate-900 bg-slate-900 text-white"
+                                      ? "border-primary bg-primary text-primary-foreground"
                                       : isAvailable
-                                        ? "border-slate-300 hover:border-slate-400 text-slate-900"
-                                        : "border-slate-200 text-slate-400 cursor-not-allowed opacity-50",
+                                        ? "border-slate-200 hover:border-primary/50 text-slate-900"
+                                        : "border-slate-100 text-slate-400 cursor-not-allowed opacity-50",
                                   )}
                                 >
                                   {value}
@@ -345,7 +344,7 @@ const ProductDetailPage = () => {
 
             {/* Description */}
             {product.description && (
-              <div className="border-t border-slate-200 pt-6">
+              <div className="border-t border-slate-100 pt-6">
                 <h3 className="text-sm font-semibold text-slate-900 mb-2">
                   Description
                 </h3>
@@ -357,33 +356,32 @@ const ProductDetailPage = () => {
             )}
 
             {/* Quantity and Actions */}
-            <div className="border-t border-slate-200 pt-6 space-y-4">
+            <div className="border-t border-slate-100 pt-6 space-y-4">
               {selectedVariant && !isOutOfStock && (
                 <div className="flex items-center gap-4">
                   <label className="text-sm font-medium text-slate-900">
                     Quantity:
                   </label>
-                  <div className="flex items-center border border-slate-300 rounded-lg">
+                  <div className="flex items-center border border-slate-200 rounded-2xl overflow-hidden">
                     <button
+                      type="button"
                       onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                      className="px-4 py-2 text-slate-600 hover:bg-slate-50 transition-colors"
+                      className="px-4 py-2.5 text-slate-600 hover:bg-slate-50 transition-all duration-200 disabled:opacity-50"
                       disabled={quantity <= 1}
                     >
-                      -
+                      −
                     </button>
-                    <span className="px-6 py-2 text-slate-900 font-medium border-x border-slate-300">
+                    <span className="px-6 py-2.5 text-slate-900 font-medium border-x border-slate-200 min-w-[3rem] text-center">
                       {quantity}
                     </span>
                     <button
+                      type="button"
                       onClick={() =>
                         setQuantity(
-                          Math.min(
-                            selectedVariant.stockAvailable,
-                            quantity + 1,
-                          ),
+                          Math.min(selectedVariant.stockAvailable, quantity + 1)
                         )
                       }
-                      className="px-4 py-2 text-slate-600 hover:bg-slate-50 transition-colors"
+                      className="px-4 py-2.5 text-slate-600 hover:bg-slate-50 transition-all duration-200 disabled:opacity-50"
                       disabled={quantity >= selectedVariant.stockAvailable}
                     >
                       +
@@ -392,10 +390,9 @@ const ProductDetailPage = () => {
                 </div>
               )}
 
-              <div className="flex gap-3">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <Button
                   onClick={async () => {
-                    // Add to cart and proceed to checkout
                     if (!isInCart && selectedVariant) {
                       await addToCart(
                         dispatch,
@@ -407,7 +404,7 @@ const ProductDetailPage = () => {
                     router.push("/checkout");
                   }}
                   disabled={isOutOfStock || !selectedVariant}
-                  className="flex-1 h-12"
+                  className="flex-1 h-12 rounded-2xl w-full sm:w-auto transition-all duration-200"
                   size="lg"
                 >
                   {isOutOfStock ? "Out of Stock" : "Buy Now"}
@@ -415,13 +412,12 @@ const ProductDetailPage = () => {
                 <Button
                   variant={isInCart ? "default" : "outline"}
                   onClick={() =>
-                    isInCart ? router.push("/cart") : handleAddToCart()
+                    isInCart ? router.push("/checkout") : handleAddToCart()
                   }
                   disabled={isOutOfStock || addingToCart || !selectedVariant}
                   className={cn(
-                    "flex-1 h-12",
-                    isInCart &&
-                      "bg-emerald-600 hover:bg-emerald-700 text-white",
+                    "flex-1 h-12 rounded-2xl w-full sm:w-auto transition-all duration-200",
+                    isInCart && "bg-emerald-600 hover:bg-emerald-700 text-white"
                   )}
                   size="lg"
                 >
@@ -440,7 +436,7 @@ const ProductDetailPage = () => {
                   variant="outline"
                   size="icon"
                   onClick={handleWishlistToggle}
-                  className="h-12 w-12"
+                  className="h-12 w-12 rounded-2xl shrink-0 transition-all duration-200"
                   disabled={!selectedVariant}
                 >
                   <Heart

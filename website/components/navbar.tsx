@@ -61,8 +61,8 @@ const Navbar = () => {
     pathname === "/forgot-password";
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white">
-      <div className="container mx-auto max-w-6xl px-4 sm:px-6">
+    <header className="sticky top-0 z-50 w-full border-b border-slate-100 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80">
+      <div className="container max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex h-16 items-center justify-between gap-4">
           <Link href="/" className="flex items-center gap-2 shrink-0">
             <span className="text-xl font-bold text-slate-900 tracking-tight">
@@ -78,9 +78,9 @@ const Navbar = () => {
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
-                    className="relative h-9 w-9 rounded-full hover:bg-slate-50"
+                    className="relative h-9 w-9 rounded-xl hover:bg-slate-50 transition-all duration-200"
                   >
-                    <Avatar className="h-8 w-8 border border-slate-200">
+                    <Avatar className="h-8 w-8 border border-slate-100 rounded-xl">
                       <AvatarImage
                         src={`https://api.dicebear.com/9.x/initials/svg?seed=${user?.firstName} ${user?.lastName}`}
                         alt={user?.firstName || "User"}
@@ -92,7 +92,7 @@ const Navbar = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
-                  className="w-56 bg-white border-slate-200"
+                  className="w-56 bg-white border-slate-100 rounded-2xl shadow-[var(--shadow-soft)]"
                   align="end"
                 >
                   <DropdownMenuLabel className="font-normal">
@@ -135,13 +135,13 @@ const Navbar = () => {
                     <Button
                       variant="ghost"
                       onClick={() => router.push("/login")}
-                      className="text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                      className="text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-all duration-200"
                     >
                       Login
                     </Button>
                     <Button
                       onClick={() => router.push("/register")}
-                      className="bg-slate-900 hover:bg-slate-800 text-white"
+                      className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl transition-all duration-200"
                     >
                       Sign Up
                     </Button>

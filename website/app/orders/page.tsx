@@ -97,7 +97,7 @@ const OrdersPage = () => {
       <h1 className="text-3xl font-bold mb-8">My Orders</h1>
 
       {orders.length === 0 ? (
-        <div className="text-center py-16 bg-slate-50 rounded-lg border border-slate-200">
+        <div className="text-center py-16 bg-slate-50 rounded-md border border-slate-100">
           <Package className="h-16 w-16 text-slate-300 mx-auto mb-4" />
           <h2 className="text-xl font-semibold text-slate-900 mb-2">
             No orders yet
@@ -120,7 +120,7 @@ const OrdersPage = () => {
 
             return (
               <Card key={order.id} className="overflow-hidden">
-                <CardHeader className="bg-slate-50 border-b border-slate-100 pb-4">
+                <CardHeader className="bg-slate-50 border-b border-slate-50 pb-4">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
@@ -203,7 +203,7 @@ const OrdersPage = () => {
                       </div>
                     ))}
                   </div>
-                  <div className="bg-slate-50 p-4 border-t border-slate-100">
+                  <div className="bg-slate-50 p-4 border-t border-slate-50">
                     <div className="flex items-start gap-2 text-sm text-slate-600">
                       <MapPin className="h-4 w-4 mt-0.5 text-slate-400" />
                       <span>

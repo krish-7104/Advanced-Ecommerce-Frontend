@@ -142,11 +142,17 @@ const CheckoutPage = () => {
   if (!isAuthenticated) return null;
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Checkout</h1>
+    <div className="container max-w-7xl mx-auto px-4 sm:px-6 py-16">
+      <div className="flex items-center gap-2 mb-8 text-sm text-slate-600">
+        <span className="font-medium text-primary">1. Address</span>
+        <span>→</span>
+        <span>2. Payment</span>
+        <span>→</span>
+        <span>3. Review</span>
+      </div>
+      <h1 className="text-3xl font-bold text-slate-900 mb-8">Checkout</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left Column: Address Selection */}
         <div className="lg:col-span-2 space-y-6">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
@@ -174,9 +180,9 @@ const CheckoutPage = () => {
                   {addresses.map((addr) => (
                     <div
                       key={addr.id}
-                      className={`relative p-4 border rounded-lg cursor-pointer transition-all ${
+                      className={`relative p-4 border rounded-2xl cursor-pointer transition-all duration-200 ${
                         selectedAddressId === addr.id
-                          ? "border-primary bg-primary/5 ring-1 ring-primary"
+                          ? "border-primary bg-primary/5 ring-2 ring-primary"
                           : "border-slate-200 hover:border-slate-300"
                       }`}
                       onClick={() => setSelectedAddressId(addr.id)}
@@ -238,7 +244,7 @@ const CheckoutPage = () => {
 
         {/* Right Column: Order Summary */}
         <div className="lg:col-span-1">
-          <Card className="sticky top-24">
+          <Card className="sticky top-24 rounded-2xl">
             <CardHeader>
               <CardTitle>Order Summary</CardTitle>
             </CardHeader>
@@ -292,8 +298,12 @@ const CheckoutPage = () => {
                 </div>
               </div>
 
+              <p className="text-xs text-slate-500 flex items-center gap-1">
+                <Check className="h-3.5 w-3.5 text-emerald-600" />
+                Secure checkout
+              </p>
               <Button
-                className="w-full"
+                className="w-full rounded-2xl h-12 transition-all duration-200"
                 size="lg"
                 onClick={handlePlaceOrder}
                 disabled={

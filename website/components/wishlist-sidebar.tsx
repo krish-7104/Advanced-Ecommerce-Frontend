@@ -51,14 +51,14 @@ export const WishlistSidebar = () => {
         >
           <Heart className="h-5 w-5" />
           {count > 0 && (
-            <span className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center rounded-full bg-slate-900 text-white text-xs font-medium">
+            <span className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center rounded-full bg-blue-600 text-white text-xs font-medium">
               {count > 99 ? "99+" : count}
             </span>
           )}
         </Button>
       </SheetTrigger>
       <SheetContent side="right" className="flex flex-col p-0">
-        <SheetHeader className="px-6 py-4 border-b border-slate-200">
+        <SheetHeader className="px-6 py-4 border-b border-slate-100">
           <SheetTitle>Wishlist</SheetTitle>
         </SheetHeader>
         <div className="flex-1 overflow-y-auto px-6 py-4">
@@ -77,7 +77,7 @@ export const WishlistSidebar = () => {
                 return (
                   <div
                     key={item.variantId}
-                    className="flex gap-3 border border-slate-200 rounded-lg p-3"
+                    className="flex gap-3 border border-slate-100 rounded-md p-3"
                   >
                     <Link
                       href={`/product/${item.variant.product.slug}`}

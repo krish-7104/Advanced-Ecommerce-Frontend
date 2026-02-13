@@ -52,7 +52,7 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md border-slate-200 bg-white">
+      <Card className="w-full max-w-md border-slate-100 bg-white">
         {isSubmitted ? (
           <>
             <CardHeader className="text-center">
@@ -100,14 +100,14 @@ export default function ForgotPasswordPage() {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="border-slate-200 text-slate-900 placeholder:text-slate-400 focus-visible:ring-slate-600"
+                    className="border-slate-100 text-slate-900 placeholder:text-slate-400 focus-visible:ring-blue-600"
                   />
                 </div>
 
                 <Button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full bg-slate-900 hover:bg-slate-800 text-white"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                 >
                   {isLoading ? "Sending..." : "Reset Password"}
                 </Button>

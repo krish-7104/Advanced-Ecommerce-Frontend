@@ -74,7 +74,7 @@ export default function ResetPasswordPage() {
   if (isSuccess) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md border-slate-200 bg-white">
+        <Card className="w-full max-w-md border-slate-100 bg-white">
           <CardHeader className="text-center">
             <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4">
               <CheckCircle2 className="h-6 w-6 text-slate-600" />
@@ -101,7 +101,7 @@ export default function ResetPasswordPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md border-slate-200 bg-white">
+      <Card className="w-full max-w-md border-slate-100 bg-white">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-semibold text-slate-900">
             Reset Password
@@ -124,7 +124,7 @@ export default function ResetPasswordPage() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="border-slate-200 text-slate-900 placeholder:text-slate-400 focus-visible:ring-slate-600 pr-10"
+                  className="border-slate-100 text-slate-900 placeholder:text-slate-400 focus-visible:ring-blue-600 pr-10"
                 />
                 <button
                   type="button"
@@ -152,7 +152,7 @@ export default function ResetPasswordPage() {
                   required
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="border-slate-200 text-slate-900 placeholder:text-slate-400 focus-visible:ring-slate-600 pr-10"
+                  className="border-slate-100 text-slate-900 placeholder:text-slate-400 focus-visible:ring-blue-600 pr-10"
                 />
                 <button
                   type="button"
@@ -171,7 +171,7 @@ export default function ResetPasswordPage() {
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-slate-900 hover:bg-slate-800 text-white"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
             >
               {isLoading ? "Resetting..." : "Reset Password"}
             </Button>

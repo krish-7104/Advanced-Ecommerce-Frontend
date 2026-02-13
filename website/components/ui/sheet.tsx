@@ -39,20 +39,20 @@ const SheetContent = React.forwardRef<
     <SheetPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed z-50 gap-4 bg-white shadow-lg transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out",
+        "fixed z-50 gap-4 bg-white shadow-sm transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out",
         side === "right" &&
-          "inset-y-0 right-0 w-full max-w-md border-l border-slate-200 data-[state=open]:slide-in-from-right data-[state=closed]:slide-out-to-right",
+          "inset-y-0 right-0 w-full max-w-md border-l border-slate-100 data-[state=open]:slide-in-from-right data-[state=closed]:slide-out-to-right",
         side === "left" &&
-          "inset-y-0 left-0 w-full max-w-md border-r border-slate-200 data-[state=open]:slide-in-from-left data-[state=closed]:slide-out-to-left",
+          "inset-y-0 left-0 w-full max-w-md border-r border-slate-100 data-[state=open]:slide-in-from-left data-[state=closed]:slide-out-to-left",
         side === "top" &&
-          "inset-x-0 top-0 h-auto border-b border-slate-200 data-[state=open]:slide-in-from-top data-[state=closed]:slide-out-to-top",
+          "inset-x-0 top-0 h-auto border-b border-slate-100 data-[state=open]:slide-in-from-top data-[state=closed]:slide-out-to-top",
         side === "bottom" &&
-          "inset-x-0 bottom-0 h-auto border-t border-slate-200 data-[state=open]:slide-in-from-bottom data-[state=closed]:slide-out-to-bottom",
+          "inset-x-0 bottom-0 h-auto border-t border-slate-100 data-[state=open]:slide-in-from-bottom data-[state=closed]:slide-out-to-bottom",
         className
       )}
       {...props}
     >
-      <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
         <SheetPrimitive.Title className="text-sm font-semibold text-slate-900" />
         <SheetClose className="rounded-full p-1 text-slate-500 hover:bg-slate-100 hover:text-slate-900">
           <X className="h-4 w-4" />
