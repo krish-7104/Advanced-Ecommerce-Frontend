@@ -10,6 +10,7 @@ import { Product } from "@/types/catalog";
 import { getPageMetadata } from "@/constants/navigation";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import LoaderComp from "@/components/loader";
 
 const ProductPage = () => {
   const metadata = getPageMetadata("/products");
@@ -27,7 +28,7 @@ const ProductPage = () => {
 
       setProducts(res.data.data);
     } catch (error: any) {
-      toast.dismiss()
+      toast.dismiss();
       toast.error(error?.response?.data?.message || "Failed to load products");
     } finally {
       setLoading(false);
@@ -49,23 +50,27 @@ const ProductPage = () => {
         }
       />
 
-      <div className="container mx-auto py-8">
-        <GenericDataTable
-          columns={columns}
-          data={products}
-          searchPlaceholder="Search product by name..."
-          renderButtons={
-            <>
-              <Button
-                size="sm"
-                onClick={() => router.push("/products/modify-product")}
-              >
-                <Plus size={16} className="mr-2" /> Product
-              </Button>
-            </>
-          }
-        />
-      </div>
+      {loading ? (
+        <LoaderComp />
+      ) : (
+        <div className="container mx-auto py-8">
+          <GenericDataTable
+            columns={columns}
+            data={products}
+            searchPlaceholder="Search product by name..."
+            renderButtons={
+              <>
+                <Button
+                  size="sm"
+                  onClick={() => router.push("/products/modify-product")}
+                >
+                  <Plus size={16} className="mr-2" /> Product
+                </Button>
+              </>
+            }
+          />
+        </div>
+      )}
     </section>
   );
 };

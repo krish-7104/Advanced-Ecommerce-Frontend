@@ -12,6 +12,7 @@ import apiHelper from "@/lib/axios-helper";
 import { Category } from "@/types/catalog";
 import ModifyCategoryDialog from "./components/modify-category.dialog";
 import { getPageMetadata } from "@/constants/navigation";
+import LoaderComp from "@/components/loader";
 
 const CategoryPage = () => {
   const metadata = getPageMetadata("/category");
@@ -31,7 +32,7 @@ const CategoryPage = () => {
     } catch (error: any) {
       toast.dismiss();
       toast.error(
-        error?.response?.data?.message || "Failed to load categories"
+        error?.response?.data?.message || "Failed to load categories",
       );
     } finally {
       setLoading(false);
@@ -53,21 +54,25 @@ const CategoryPage = () => {
         }
       />
 
-      <div className="container mx-auto py-8">
-        <GenericDataTable
-          columns={columns}
-          data={categories}
-          searchPlaceholder="Search category by name..."
-          renderButtons={
-            <>
-              <ModifyCategoryDialog
-                masterData={fetchCategories}
-                setLoading={setLoading}
-              />
-            </>
-          }
-        />
-      </div>
+      {loading ? (
+        <LoaderComp />
+      ) : (
+        <div className="container mx-auto py-8">
+          <GenericDataTable
+            columns={columns}
+            data={categories}
+            searchPlaceholder="Search category by name..."
+            renderButtons={
+              <>
+                <ModifyCategoryDialog
+                  masterData={fetchCategories}
+                  setLoading={setLoading}
+                />
+              </>
+            }
+          />
+        </div>
+      )}
     </section>
   );
 };

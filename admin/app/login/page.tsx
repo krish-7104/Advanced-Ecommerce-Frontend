@@ -10,9 +10,6 @@ import { BASE_API_URL } from "@/lib/api-helper";
 import { setUserHandler } from "@/redux/actions";
 import apiHelper from "@/lib/axios-helper";
 const Login = () => {
-  useEffect(() => {
-    toast.dismiss();
-  }, []);
   const router = useRouter();
 
   const [formData, setFormData] = React.useState({
@@ -31,28 +28,27 @@ const Login = () => {
     e.preventDefault();
 
     if (!formData.email || !formData.password) {
-      toast.dismiss();
       toast.error("Please fill in all fields");
       return;
     }
 
-    toast.loading("Logging In...");
+    const loadingToastId = toast.loading("Logging In...");
     try {
       const resp = await apiHelper.post(
         `${BASE_API_URL}/auth/login`,
         formData,
         {
           withCredentials: true,
-        }
+        },
       );
       if (resp.data.statusCode === 200) {
-        toast.dismiss();
+        toast.dismiss(loadingToastId);
         setUserHandler(resp.data.data);
         toast.success(resp.data.message);
       }
       router.push("/");
     } catch (error: any) {
-      toast.dismiss();
+      toast.dismiss(loadingToastId);
       toast.error(error?.response?.data?.message || "Try Again Later");
     }
   };

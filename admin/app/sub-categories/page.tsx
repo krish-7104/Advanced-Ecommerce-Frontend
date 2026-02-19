@@ -11,6 +11,7 @@ import apiHelper from "@/lib/axios-helper";
 import { Category } from "@/types/catalog";
 import ModifySubcategoryDialog from "./components/modify-subcategory.dialog";
 import { getPageMetadata } from "@/constants/navigation";
+import LoaderComp from "@/components/loader";
 
 const SubcategoryPage = () => {
   const metadata = getPageMetadata("/sub-categories");
@@ -30,7 +31,7 @@ const SubcategoryPage = () => {
     } catch (error: any) {
       toast.dismiss();
       toast.error(
-        error?.response?.data?.message || "Failed to load subcategories"
+        error?.response?.data?.message || "Failed to load subcategories",
       );
     } finally {
       setLoading(false);
@@ -52,21 +53,25 @@ const SubcategoryPage = () => {
         }
       />
 
-      <div className="container mx-auto py-8">
-        <GenericDataTable
-          columns={columns}
-          data={subcategories}
-          searchPlaceholder="Search subcategory by name..."
-          renderButtons={
-            <>
-              <ModifySubcategoryDialog
-                masterData={fetchSubcategories}
-                setLoading={setLoading}
-              />
-            </>
-          }
-        />
-      </div>
+      {loading ? (
+        <LoaderComp />
+      ) : (
+        <div className="container mx-auto py-8">
+          <GenericDataTable
+            columns={columns}
+            data={subcategories}
+            searchPlaceholder="Search subcategory by name..."
+            renderButtons={
+              <>
+                <ModifySubcategoryDialog
+                  masterData={fetchSubcategories}
+                  setLoading={setLoading}
+                />
+              </>
+            }
+          />
+        </div>
+      )}
     </section>
   );
 };

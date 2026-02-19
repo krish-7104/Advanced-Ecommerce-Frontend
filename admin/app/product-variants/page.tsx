@@ -10,6 +10,7 @@ import { ProductVariant } from "@/types/catalog";
 import { getPageMetadata } from "@/constants/navigation";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import LoaderComp from "@/components/loader";
 
 const ProductVariantPage = () => {
   const metadata = getPageMetadata("/product/variants");
@@ -47,22 +48,26 @@ const ProductVariantPage = () => {
         }
       />
 
-      <div className="container mx-auto py-8">
-        <GenericDataTable
-          columns={columns}
-          data={variants}
-          searchKey="sku"
-          searchPlaceholder="Search variants by SKU..."
-          renderButtons={
-            <Button
-              size="sm"
-              onClick={() => router.push(`/product-variants/modify-variants`)}
-            >
-              <Plus size={16} className="mr-2" /> Add Variant
-            </Button>
-          }
-        />
-      </div>
+      {loading ? (
+        <LoaderComp />
+      ) : (
+        <div className="container mx-auto py-8">
+          <GenericDataTable
+            columns={columns}
+            data={variants}
+            searchKey="sku"
+            searchPlaceholder="Search variants by SKU..."
+            renderButtons={
+              <Button
+                size="sm"
+                onClick={() => router.push(`/product-variants/modify-variants`)}
+              >
+                <Plus size={16} className="mr-2" /> Add Variant
+              </Button>
+            }
+          />
+        </div>
+      )}
     </section>
   );
 };

@@ -9,6 +9,7 @@ import apiHelper from "@/lib/axios-helper";
 import { Order } from "@/types/order";
 import { getPageMetadata } from "@/constants/navigation";
 import { useRouter } from "next/navigation";
+import LoaderComp from "@/components/loader";
 
 const OrdersPage = () => {
   const metadata = getPageMetadata("/orders");
@@ -57,14 +58,18 @@ const OrdersPage = () => {
         }
       />
 
-      <div className="container mx-auto py-8">
-        <GenericDataTable
-          columns={columns}
-          data={orders}
-          searchPlaceholder="Search order..."
-          onRowClick={handleOrderClick}
-        />
-      </div>
+      {loading ? (
+        <LoaderComp />
+      ) : (
+        <div className="container mx-auto py-8">
+          <GenericDataTable
+            columns={columns}
+            data={orders}
+            searchPlaceholder="Search order..."
+            onRowClick={handleOrderClick}
+          />
+        </div>
+      )}
     </section>
   );
 };
