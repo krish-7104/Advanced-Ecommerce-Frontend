@@ -40,12 +40,13 @@ const ModifyVariant = () => {
   const [loading, setLoading] = useState(false);
   const [product, setProduct] = useState<Product | null>(null);
   const [variant, setVariant] = useState<ProductVariant | null>(null);
-  const [images, setImages] = useState<(any | File)[]>([]);
+  const [images, setImages] = useState<(any | File | string)[]>([]);
   const [deletedImageIds, setDeletedImageIds] = useState<string[]>([]);
   const [coverIndex, setCoverIndex] = useState(0);
   const [productsList, setProductsList] = useState<Product[]>([]);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
   const [productSearch, setProductSearch] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
 
   const [formData, setFormData] = useState({
     productId: productId || "",
@@ -231,6 +232,28 @@ const ModifyVariant = () => {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
+  const handleAddImageUrl = () => {
+    if (!imageUrl.trim()) {
+      toast.error("Please enter a valid image URL");
+      return;
+    }
+
+    try {
+      new URL(imageUrl);
+    } catch {
+      toast.error("Please enter a valid URL");
+      return;
+    }
+
+    if (images.length >= 10) {
+      toast.error("Maximum 10 images allowed");
+      return;
+    }
+
+    setImages((prev) => [...prev, imageUrl]);
+    setImageUrl("");
+  };
+
   const handleRemoveImage = (index: number) => {
     const item = images[index];
     if (item && "id" in item) {
@@ -290,9 +313,19 @@ const ModifyVariant = () => {
     formDataBody.append("isActive", formData.isActive.toString());
     formDataBody.append("attributes", JSON.stringify(getAttributesPayload()));
 
+    const urlImages: string[] = [];
     images.forEach((img) => {
-      formDataBody.append("images", img);
+      if (img instanceof File) {
+        formDataBody.append("images", img);
+      } else if (typeof img === "string") {
+        urlImages.push(img); // Direct URL — goes to imageUrls field
+      } else if (img && typeof img === "object" && "url" in img) {
+        urlImages.push(img.url); // Existing asset URL — goes to imageUrls field
+      }
     });
+    if (urlImages.length > 0) {
+      formDataBody.append("imageUrls", JSON.stringify(urlImages));
+    }
     formDataBody.append("coverImageIndex", coverIndex.toString());
 
     return await apiHelper.post(`/product/variants`, formDataBody);
@@ -313,6 +346,7 @@ const ModifyVariant = () => {
     let coverFileIndex = -1;
     let fileCounter = 0;
 
+    const patchUrlImages: string[] = [];
     images.forEach((item, index) => {
       if (item instanceof File) {
         formDataBody.append("images", item);
@@ -321,7 +355,14 @@ const ModifyVariant = () => {
           coverFileIndex = fileCounter;
         }
         fileCounter++;
-      } else if (item && item.id) {
+      } else if (typeof item === "string") {
+        patchUrlImages.push(item); // Direct URL — goes to imageUrls field
+        newImageOrder.push(index);
+        if (index === coverIndex) {
+          coverFileIndex = fileCounter;
+        }
+        fileCounter++;
+      } else if (item && typeof item === "object" && "id" in item) {
         // Only include in reorderImages if the index has changed from the original position
         const originalIndex = variant?.images?.findIndex(
           (img: any) => img.id === item.id,
@@ -331,6 +372,9 @@ const ModifyVariant = () => {
         }
       }
     });
+    if (patchUrlImages.length > 0) {
+      formDataBody.append("imageUrls", JSON.stringify(patchUrlImages));
+    }
 
     if (reorderImages.length > 0) {
       formDataBody.append("reorderImages", JSON.stringify(reorderImages));
@@ -343,9 +387,13 @@ const ModifyVariant = () => {
     }
 
     const selectedCover = images[coverIndex];
-    if (selectedCover instanceof File) {
+    if (selectedCover instanceof File || typeof selectedCover === "string") {
       formDataBody.append("coverImageIndex", coverFileIndex.toString());
-    } else if (selectedCover && selectedCover.id) {
+    } else if (
+      selectedCover &&
+      typeof selectedCover === "object" &&
+      "id" in selectedCover
+    ) {
       formDataBody.append("coverImageId", selectedCover.id);
     }
 
@@ -625,31 +673,68 @@ const ModifyVariant = () => {
           </div>
 
           <div className="flex flex-col gap-4">
-            <input
-              type="file"
-              multiple
-              accept="image/*"
-              className="hidden"
-              ref={fileInputRef}
-              onChange={handleFileUpload}
-            />
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full h-32 border-2 border-dashed border-gray-200 rounded-xl hover:border-blue-400 hover:bg-blue-50/10 transition-all flex flex-col items-center justify-center gap-3 group"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={loading || images.length >= 10}
-            >
-              <UploadCloud className="w-10 h-10 text-gray-400 group-hover:text-blue-500 transition-colors" />
-              <div className="text-center">
-                <p className="text-sm font-medium text-gray-700">
-                  Click to upload images
-                </p>
-                <p className="text-xs text-gray-400 mt-1">
-                  Support JPEG, PNG, WEBP (Max 5MB)
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  className="hidden"
+                  ref={fileInputRef}
+                  onChange={handleFileUpload}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full h-32 border-2 border-dashed border-gray-200 rounded-xl hover:border-blue-400 hover:bg-blue-50/10 transition-all flex flex-col items-center justify-center gap-3 group"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={loading || images.length >= 10}
+                >
+                  <UploadCloud className="w-10 h-10 text-gray-400 group-hover:text-blue-500 transition-colors" />
+                  <div className="text-center">
+                    <p className="text-sm font-medium text-gray-700">
+                      Click to upload images
+                    </p>
+                    <p className="text-xs text-gray-400 mt-1">
+                      Support JPEG, PNG, WEBP (Max 5MB)
+                    </p>
+                  </div>
+                </Button>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">
+                  Or add image URL
+                </label>
+                <div className="flex gap-2">
+                  <Input
+                    type="url"
+                    placeholder="https://example.com/image.jpg"
+                    value={imageUrl}
+                    onChange={(e) => setImageUrl(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        handleAddImageUrl();
+                      }
+                    }}
+                    disabled={loading || images.length >= 10}
+                    className="flex-1"
+                  />
+                  <Button
+                    type="button"
+                    onClick={handleAddImageUrl}
+                    disabled={
+                      loading || images.length >= 10 || !imageUrl.trim()
+                    }
+                  >
+                    Add
+                  </Button>
+                </div>
+                <p className="text-xs text-gray-400">
+                  Paste an image URL and click Add
                 </p>
               </div>
-            </Button>
+            </div>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
@@ -659,7 +744,13 @@ const ModifyVariant = () => {
                 className="relative group aspect-square rounded-xl border border-gray-100 overflow-hidden bg-gray-50"
               >
                 <img
-                  src={img instanceof File ? URL.createObjectURL(img) : img.url}
+                  src={
+                    img instanceof File
+                      ? URL.createObjectURL(img)
+                      : typeof img === "string"
+                        ? img
+                        : img.url
+                  }
                   alt=""
                   className="w-full h-full object-cover"
                 />
