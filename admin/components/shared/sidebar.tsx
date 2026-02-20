@@ -9,18 +9,17 @@ import { useDispatch } from "react-redux";
 import { navigationConfig } from "@/constants/navigation";
 import { useEffect, useState } from "react";
 import { loginChecker } from "@/helper/LoginChecker";
+import { useAllPermissions } from "@/hooks/usePermission";
 
 const Sidebar = () => {
   const router = useRouter();
   const pathname = usePathname();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
+  const permissions = useAllPermissions();
 
   const hiddenRoutes = ["login", "reset-password", "verify-token"];
   const isHidden = hiddenRoutes.some((r) => pathname.includes(r));
-
-  // Navigation items are now imported from centralized constants
-  const navItems = navigationConfig;
 
   const logoutHandler = () => {
     toast.loading("Logging out...");
@@ -38,6 +37,21 @@ const Sidebar = () => {
 
   if (isHidden) return null;
 
+  // Filter nav: show a section item only if the user has at least one of its permissions
+  const filteredNav = navigationConfig
+    .map((group) => ({
+      ...group,
+      items: group.items.filter((item) => {
+        // If no permissions declared on item, always show it
+        if (!item.permissions || item.permissions.length === 0) return true;
+        // Super admin case: if permissions haven't loaded yet, show all
+        if (permissions.length === 0) return true;
+        // Show if user has at least one of the item's permissions
+        return item.permissions.some((p) => permissions.includes(p));
+      }),
+    }))
+    .filter((group) => group.items.length > 0); // hide empty sections
+
   return (
     <aside className="h-screen w-72 bg-[#121317] border-r border-white/5 flex flex-col px-4 py-6">
       <div className="mb-8">
@@ -48,8 +62,8 @@ const Sidebar = () => {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 space-y-6">
-        {navItems.map((group) => (
+      <nav className="flex-1 space-y-6 overflow-y-auto">
+        {filteredNav.map((group) => (
           <div key={group.section}>
             <p className="mb-2 text-xs uppercase tracking-wide text-gray-500">
               {group.section}

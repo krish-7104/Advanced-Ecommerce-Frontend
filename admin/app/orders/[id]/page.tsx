@@ -17,6 +17,7 @@ import {
 import Link from "next/link";
 import apiHelper from "@/lib/axios-helper";
 import { Order } from "@/types/order";
+import { usePermission } from "@/hooks/usePermission";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -34,6 +35,7 @@ const OrderDetailsPage = () => {
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [updatingStratus, setUpdatingStatus] = useState<boolean>(false);
+  const canUpdateOrder = usePermission("orders.update");
 
   const fetchOrder = async () => {
     try {
@@ -156,30 +158,32 @@ const OrderDetailsPage = () => {
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
-            <Select
-              value={order.status}
-              onValueChange={updateStatus}
-              disabled={
-                updatingStratus ||
-                order.status === "CANCELLED" ||
-                order.status === "DELIVERED"
-              }
-            >
-              <SelectTrigger className="w-[180px] bg-white">
-                <SelectValue placeholder="Update Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="PENDING">Pending</SelectItem>
-                <SelectItem value="PAID">Paid</SelectItem>
-                <SelectItem value="PACKED">Packed</SelectItem>
-                <SelectItem value="SHIPPED">Shipped</SelectItem>
-                <SelectItem value="DELIVERED">Delivered</SelectItem>
-                <SelectItem value="CANCELLED">Cancelled</SelectItem>
-                <SelectItem value="REFUNDED">Refunded</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          {canUpdateOrder && (
+            <div className="flex items-center gap-2">
+              <Select
+                value={order.status}
+                onValueChange={updateStatus}
+                disabled={
+                  updatingStratus ||
+                  order.status === "CANCELLED" ||
+                  order.status === "DELIVERED"
+                }
+              >
+                <SelectTrigger className="w-[180px] bg-white">
+                  <SelectValue placeholder="Update Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="PENDING">Pending</SelectItem>
+                  <SelectItem value="PAID">Paid</SelectItem>
+                  <SelectItem value="PACKED">Packed</SelectItem>
+                  <SelectItem value="SHIPPED">Shipped</SelectItem>
+                  <SelectItem value="DELIVERED">Delivered</SelectItem>
+                  <SelectItem value="CANCELLED">Cancelled</SelectItem>
+                  <SelectItem value="REFUNDED">Refunded</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

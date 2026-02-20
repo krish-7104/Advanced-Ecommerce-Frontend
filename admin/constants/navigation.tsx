@@ -20,6 +20,7 @@ export interface NavItem {
   title: string;
   route: string;
   icon: LucideIcon;
+  permissions?: string[];
 }
 
 export interface NavSection {
@@ -30,33 +31,111 @@ export interface NavSection {
 export const navigationConfig: NavSection[] = [
   {
     section: "General",
-    items: [{ title: "Dashboard", route: "/", icon: Home }],
+    items: [
+      {
+        title: "Dashboard",
+        route: "/",
+        icon: Home,
+        permissions: ["dashboard.view", "dashboard.download"],
+      },
+    ],
   },
   {
     section: "Catalog",
     items: [
-      { title: "Categories", route: "/category", icon: Folder },
-      { title: "Subcategories", route: "/sub-categories", icon: FolderTree },
-      { title: "Products", route: "/products", icon: Package },
-      { title: "Product Variants", route: "/product-variants", icon: Layers },
+      {
+        title: "Categories",
+        route: "/category",
+        icon: Folder,
+        permissions: [
+          "categories.view",
+          "categories.create",
+          "categories.update",
+          "categories.delete",
+        ],
+      },
+      {
+        title: "Subcategories",
+        route: "/sub-categories",
+        icon: FolderTree,
+        permissions: [
+          "sub-categories.view",
+          "sub-categories.create",
+          "sub-categories.update",
+          "sub-categories.delete",
+        ],
+      },
+      {
+        title: "Products",
+        route: "/products",
+        icon: Package,
+        permissions: [
+          "products.view",
+          "products.create",
+          "products.update",
+          "products.delete",
+        ],
+      },
+      {
+        title: "Product Variants",
+        route: "/product-variants",
+        icon: Layers,
+        permissions: [
+          "product-variants.view",
+          "product-variants.create",
+          "product-variants.update",
+          "product-variants.delete",
+        ],
+      },
     ],
   },
   {
     section: "Operations",
     items: [
-      { title: "Orders", route: "/orders", icon: ShoppingCart },
-      { title: "Users", route: "/users", icon: Users },
+      {
+        title: "Orders",
+        route: "/orders",
+        icon: ShoppingCart,
+        permissions: ["orders.view", "orders.update"],
+      },
+      {
+        title: "Users",
+        route: "/users",
+        icon: Users,
+        permissions: [
+          "users.view",
+          "users.create",
+          "users.update",
+          "users.delete",
+        ],
+      },
     ],
   },
   {
     section: "Access Control",
-    items: [{ title: "Admins", route: "/settings/admins", icon: Shield }],
+    items: [
+      {
+        title: "Admins",
+        route: "/settings/admins",
+        icon: Shield,
+        permissions: [
+          "admins.view",
+          "admins.create",
+          "admins.update",
+          "admins.delete",
+        ],
+      },
+    ],
   },
   {
     section: "System",
     items: [
-      { title: "Logs", route: "/logs", icon: Activity },
-      { title: "Settings", route: "/settings", icon: Settings },
+      {
+        title: "Logs",
+        route: "/logs",
+        icon: Activity,
+        permissions: ["logs.view", "logs.create", "logs.update", "logs.delete"],
+      },
     ],
   },
 ];

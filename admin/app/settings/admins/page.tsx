@@ -10,11 +10,14 @@ import apiHelper from "@/lib/axios-helper";
 import { AdminUser } from "@/types/admin-user";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import PermissionGuard from "@/components/shared/permission-guard";
+import { usePermission } from "@/hooks/usePermission";
 
 const AdminsPage = () => {
   const router = useRouter();
   const [admins, setAdmins] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const canCreate = usePermission("admins.create");
 
   const fetchAdmins = async () => {
     setLoading(true);
@@ -35,25 +38,34 @@ const AdminsPage = () => {
   const columns = getColumns(fetchAdmins);
 
   return (
-    <section className="w-full min-h-screen bg-white">
-      <div className="flex justify-between items-center pr-8">
-        <PageTitle title="Admin Users" icon={<Users size={24} />} />
-      </div>
+    <PermissionGuard permission="admins.view">
+      <section className="w-full min-h-screen bg-white">
+        <div className="flex justify-between items-center pr-8">
+          <PageTitle title="Admin Users" icon={<Users size={24} />} />
+        </div>
 
-      <div className="container mx-auto py-8">
-        <GenericDataTable
-          columns={columns}
-          data={admins}
-          searchPlaceholder="Search admins..."
-          renderButtons={[
-            <Button onClick={() => router.push("/settings/admins/new")}>
-              <UserPlus className="mr-2 h-4 w-4" />
-              Add Admin
-            </Button>,
-          ]}
-        />
-      </div>
-    </section>
+        <div className="container mx-auto py-8">
+          <GenericDataTable
+            columns={columns}
+            data={admins}
+            searchPlaceholder="Search admins..."
+            renderButtons={
+              canCreate
+                ? [
+                    <Button
+                      key="add-admin"
+                      onClick={() => router.push("/settings/admins/new")}
+                    >
+                      <UserPlus className="mr-2 h-4 w-4" />
+                      Add Admin
+                    </Button>,
+                  ]
+                : []
+            }
+          />
+        </div>
+      </section>
+    </PermissionGuard>
   );
 };
 

@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { ShoppingCart } from "lucide-react";
@@ -10,6 +11,7 @@ import { Order } from "@/types/order";
 import { getPageMetadata } from "@/constants/navigation";
 import { useRouter } from "next/navigation";
 import LoaderComp from "@/components/loader";
+import PermissionGuard from "@/components/shared/permission-guard";
 
 const OrdersPage = () => {
   const metadata = getPageMetadata("/orders");
@@ -21,11 +23,7 @@ const OrdersPage = () => {
     setLoading(true);
     try {
       const res = await apiHelper.get("/order");
-
-      if (!res?.data?.data) {
-        throw new Error("Invalid API response");
-      }
-
+      if (!res?.data?.data) throw new Error("Invalid API response");
       setOrders(res.data.data);
     } catch (error: any) {
       toast.dismiss();
@@ -46,31 +44,33 @@ const OrdersPage = () => {
   };
 
   return (
-    <section className="w-full min-h-screen bg-white">
-      <PageTitle
-        title={metadata?.title || "Orders"}
-        icon={
-          metadata?.icon ? (
-            <metadata.icon size={24} />
-          ) : (
-            <ShoppingCart size={24} />
-          )
-        }
-      />
+    <PermissionGuard permission="orders.view">
+      <section className="w-full min-h-screen bg-white">
+        <PageTitle
+          title={metadata?.title || "Orders"}
+          icon={
+            metadata?.icon ? (
+              <metadata.icon size={24} />
+            ) : (
+              <ShoppingCart size={24} />
+            )
+          }
+        />
 
-      {loading ? (
-        <LoaderComp />
-      ) : (
-        <div className="container mx-auto py-8">
-          <GenericDataTable
-            columns={columns}
-            data={orders}
-            searchPlaceholder="Search order..."
-            onRowClick={handleOrderClick}
-          />
-        </div>
-      )}
-    </section>
+        {loading ? (
+          <LoaderComp />
+        ) : (
+          <div className="container mx-auto py-8">
+            <GenericDataTable
+              columns={columns}
+              data={orders}
+              searchPlaceholder="Search order..."
+              onRowClick={handleOrderClick}
+            />
+          </div>
+        )}
+      </section>
+    </PermissionGuard>
   );
 };
 

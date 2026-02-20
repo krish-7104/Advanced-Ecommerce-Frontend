@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import StatusBadge from "@/components/shared/status-badge";
 import apiHelper from "@/lib/axios-helper";
 import toast from "react-hot-toast";
+import { usePermission } from "@/hooks/usePermission";
 
 interface ActionCellProps {
   category: Category;
@@ -23,6 +24,8 @@ const ActionCell = ({ category, masterData, setLoading }: ActionCellProps) => {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const canEdit = usePermission("categories.update");
+  const canDelete = usePermission("categories.delete");
 
   const onDelete = async () => {
     try {
@@ -39,7 +42,7 @@ const ActionCell = ({ category, masterData, setLoading }: ActionCellProps) => {
     } catch (error: any) {
       toast.dismiss();
       toast.error(
-        error?.response?.data?.message || "Failed to delete category"
+        error?.response?.data?.message || "Failed to delete category",
       );
     } finally {
       setIsDeleting(false);
@@ -48,22 +51,26 @@ const ActionCell = ({ category, masterData, setLoading }: ActionCellProps) => {
 
   return (
     <div className="flex items-center gap-2">
-      <Button
-        variant="outline"
-        size="icon"
-        className="h-8 w-8 text-blue-600 border-blue-200 hover:bg-blue-50"
-        onClick={() => setIsEditOpen(true)}
-      >
-        <Pencil size={16} />
-      </Button>
-      <Button
-        variant="outline"
-        size="icon"
-        className="h-8 w-8 text-red-600 border-red-200 hover:bg-red-50"
-        onClick={() => setIsDeleteOpen(true)}
-      >
-        <Trash size={16} />
-      </Button>
+      {canEdit && (
+        <Button
+          variant="outline"
+          size="icon"
+          className="h-8 w-8 text-blue-600 border-blue-200 hover:bg-blue-50"
+          onClick={() => setIsEditOpen(true)}
+        >
+          <Pencil size={16} />
+        </Button>
+      )}
+      {canDelete && (
+        <Button
+          variant="outline"
+          size="icon"
+          className="h-8 w-8 text-red-600 border-red-200 hover:bg-red-50"
+          onClick={() => setIsDeleteOpen(true)}
+        >
+          <Trash size={16} />
+        </Button>
+      )}
 
       <ModifyCategoryDialog
         category={category}
@@ -87,7 +94,7 @@ const ActionCell = ({ category, masterData, setLoading }: ActionCellProps) => {
 
 export const getColumns = (
   masterData: () => void,
-  setLoading: React.Dispatch<React.SetStateAction<boolean>>
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>,
 ): ColumnDef<Category>[] => [
   {
     accessorKey: "name",

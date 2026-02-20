@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import StatusBadge from "@/components/shared/status-badge";
 import apiHelper from "@/lib/axios-helper";
 import toast from "react-hot-toast";
+import { usePermission } from "@/hooks/usePermission";
 
 interface ActionCellProps {
   subcategory: Category;
@@ -27,6 +28,8 @@ const ActionCell = ({
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const canEdit = usePermission("sub-categories.update");
+  const canDelete = usePermission("sub-categories.delete");
 
   const onDelete = async () => {
     try {
@@ -43,7 +46,7 @@ const ActionCell = ({
     } catch (error: any) {
       toast.dismiss();
       toast.error(
-        error?.response?.data?.message || "Failed to delete subcategory"
+        error?.response?.data?.message || "Failed to delete subcategory",
       );
     } finally {
       setIsDeleting(false);
@@ -52,22 +55,26 @@ const ActionCell = ({
 
   return (
     <div className="flex items-center gap-2">
-      <Button
-        variant="outline"
-        size="icon"
-        className="h-8 w-8 text-blue-600 border-blue-200 hover:bg-blue-50"
-        onClick={() => setIsEditOpen(true)}
-      >
-        <Pencil size={16} />
-      </Button>
-      <Button
-        variant="outline"
-        size="icon"
-        className="h-8 w-8 text-red-600 border-red-200 hover:bg-red-50"
-        onClick={() => setIsDeleteOpen(true)}
-      >
-        <Trash size={16} />
-      </Button>
+      {canEdit && (
+        <Button
+          variant="outline"
+          size="icon"
+          className="h-8 w-8 text-blue-600 border-blue-200 hover:bg-blue-50"
+          onClick={() => setIsEditOpen(true)}
+        >
+          <Pencil size={16} />
+        </Button>
+      )}
+      {canDelete && (
+        <Button
+          variant="outline"
+          size="icon"
+          className="h-8 w-8 text-red-600 border-red-200 hover:bg-red-50"
+          onClick={() => setIsDeleteOpen(true)}
+        >
+          <Trash size={16} />
+        </Button>
+      )}
 
       <ModifySubcategoryDialog
         subcategory={subcategory}
@@ -91,7 +98,7 @@ const ActionCell = ({
 
 export const getColumns = (
   masterData: () => void,
-  setLoading: React.Dispatch<React.SetStateAction<boolean>>
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>,
 ): ColumnDef<Category>[] => [
   {
     accessorKey: "name",

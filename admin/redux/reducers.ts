@@ -5,22 +5,28 @@ const initialState: InitialState = {
     id: "",
     name: "",
     email: "",
-    role: {
-      id: "",
-      name: "",
-      description: "",
-      createdAt: "",
-    },
+    permissions: [],
   },
 };
 
 export const reducers = (
   state = initialState,
-  action: Action
+  action: Action,
 ): InitialState => {
   switch (action.type) {
     case "USER_DATA":
-      return { ...state, userData: action.payload };
+      return {
+        ...state,
+        userData: {
+          ...action.payload,
+          // Normalize: extract permission codes from permission objects if needed
+          permissions: Array.isArray(action.payload?.permissions)
+            ? action.payload.permissions.map((p: any) =>
+                typeof p === "string" ? p : p.code,
+              )
+            : [],
+        },
+      };
     default:
       return state;
   }

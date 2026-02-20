@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Users } from "lucide-react";
@@ -8,6 +9,7 @@ import { getColumns } from "./columns";
 import apiHelper from "@/lib/axios-helper";
 import { User } from "@/types/user";
 import { getPageMetadata } from "@/constants/navigation";
+import PermissionGuard from "@/components/shared/permission-guard";
 
 const UsersPage = () => {
   const metadata = getPageMetadata("/users");
@@ -18,11 +20,7 @@ const UsersPage = () => {
     setLoading(true);
     try {
       const res = await apiHelper.get("/users");
-
-      if (!res?.data?.data) {
-        throw new Error("Invalid API response");
-      }
-
+      if (!res?.data?.data) throw new Error("Invalid API response");
       setUsers(res.data.data);
     } catch (error: any) {
       toast.dismiss();
@@ -39,22 +37,24 @@ const UsersPage = () => {
   const columns = getColumns(fetchUsers, setLoading);
 
   return (
-    <section className="w-full min-h-screen bg-white">
-      <PageTitle
-        title={metadata?.title || "Users"}
-        icon={
-          metadata?.icon ? <metadata.icon size={24} /> : <Users size={24} />
-        }
-      />
-
-      <div className="container mx-auto py-8">
-        <GenericDataTable
-          columns={columns}
-          data={users}
-          searchPlaceholder="Search users..."
+    <PermissionGuard permission="users.view">
+      <section className="w-full min-h-screen bg-white">
+        <PageTitle
+          title={metadata?.title || "Users"}
+          icon={
+            metadata?.icon ? <metadata.icon size={24} /> : <Users size={24} />
+          }
         />
-      </div>
-    </section>
+
+        <div className="container mx-auto py-8">
+          <GenericDataTable
+            columns={columns}
+            data={users}
+            searchPlaceholder="Search users..."
+          />
+        </div>
+      </section>
+    </PermissionGuard>
   );
 };
 

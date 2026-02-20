@@ -11,6 +11,7 @@ import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import StatusBadge from "@/components/shared/status-badge";
 import Image from "next/image";
+import { usePermission } from "@/hooks/usePermission";
 
 interface ActionCellProps {
   variant: ProductVariant;
@@ -22,6 +23,8 @@ const ActionCell = ({ variant, masterData, setLoading }: ActionCellProps) => {
   const router = useRouter();
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const canEdit = usePermission("product-variants.update");
+  const canDelete = usePermission("product-variants.delete");
 
   const onDelete = async () => {
     try {
@@ -45,26 +48,30 @@ const ActionCell = ({ variant, masterData, setLoading }: ActionCellProps) => {
 
   return (
     <div className="flex items-center gap-2">
-      <Button
-        variant="outline"
-        size="icon"
-        className="h-8 w-8 text-blue-600 border-blue-200 hover:bg-blue-50"
-        onClick={() =>
-          router.push(
-            `/product-variants/modify-variants?variantId=${variant.id}`,
-          )
-        }
-      >
-        <Pencil size={16} />
-      </Button>
-      <Button
-        variant="outline"
-        size="icon"
-        className="h-8 w-8 text-red-600 border-red-200 hover:bg-red-50"
-        onClick={() => setIsDeleteOpen(true)}
-      >
-        <Trash size={16} />
-      </Button>
+      {canEdit && (
+        <Button
+          variant="outline"
+          size="icon"
+          className="h-8 w-8 text-blue-600 border-blue-200 hover:bg-blue-50"
+          onClick={() =>
+            router.push(
+              `/product-variants/modify-variants?variantId=${variant.id}`,
+            )
+          }
+        >
+          <Pencil size={16} />
+        </Button>
+      )}
+      {canDelete && (
+        <Button
+          variant="outline"
+          size="icon"
+          className="h-8 w-8 text-red-600 border-red-200 hover:bg-red-50"
+          onClick={() => setIsDeleteOpen(true)}
+        >
+          <Trash size={16} />
+        </Button>
+      )}
 
       <DeleteModal
         title="Delete Variant"

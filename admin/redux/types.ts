@@ -6,14 +6,7 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  role: Role;
-}
-
-export interface Role {
-  id: string;
-  name: string;
-  description: string;
-  createdAt: string;
+  permissions: string[]; // Array of permission codes e.g. ["categories.view", "orders.update"]
 }
 
 export interface Action {

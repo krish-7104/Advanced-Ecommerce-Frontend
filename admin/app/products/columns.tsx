@@ -10,6 +10,7 @@ import apiHelper from "@/lib/axios-helper";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import StatusBadge from "@/components/shared/status-badge";
+import { usePermission } from "@/hooks/usePermission";
 
 interface ActionCellProps {
   product: Product;
@@ -21,6 +22,8 @@ const ActionCell = ({ product, masterData, setLoading }: ActionCellProps) => {
   const router = useRouter();
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const canEdit = usePermission("products.update");
+  const canDelete = usePermission("products.delete");
 
   const onDelete = async () => {
     try {
@@ -44,24 +47,28 @@ const ActionCell = ({ product, masterData, setLoading }: ActionCellProps) => {
 
   return (
     <div className="flex items-center gap-2">
-      <Button
-        variant="outline"
-        size="icon"
-        className="h-8 w-8 text-blue-600 border-blue-200 hover:bg-blue-50"
-        onClick={() =>
-          router.push(`/products/modify-product?productId=${product.id}`)
-        }
-      >
-        <Pencil size={16} />
-      </Button>
-      <Button
-        variant="outline"
-        size="icon"
-        className="h-8 w-8 text-red-600 border-red-200 hover:bg-red-50"
-        onClick={() => setIsDeleteOpen(true)}
-      >
-        <Trash size={16} />
-      </Button>
+      {canEdit && (
+        <Button
+          variant="outline"
+          size="icon"
+          className="h-8 w-8 text-blue-600 border-blue-200 hover:bg-blue-50"
+          onClick={() =>
+            router.push(`/products/modify-product?productId=${product.id}`)
+          }
+        >
+          <Pencil size={16} />
+        </Button>
+      )}
+      {canDelete && (
+        <Button
+          variant="outline"
+          size="icon"
+          className="h-8 w-8 text-red-600 border-red-200 hover:bg-red-50"
+          onClick={() => setIsDeleteOpen(true)}
+        >
+          <Trash size={16} />
+        </Button>
+      )}
 
       <DeleteModal
         title="Delete Product"
@@ -77,7 +84,7 @@ const ActionCell = ({ product, masterData, setLoading }: ActionCellProps) => {
 
 export const getColumns = (
   masterData: () => void,
-  setLoading: React.Dispatch<React.SetStateAction<boolean>>
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>,
 ): ColumnDef<Product>[] => [
   {
     accessorKey: "name",

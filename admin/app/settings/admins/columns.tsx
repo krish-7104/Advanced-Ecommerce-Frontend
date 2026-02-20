@@ -10,10 +10,12 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
 import { MoreHorizontal, Pencil, Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
 import apiHelper from "@/lib/axios-helper";
 import toast from "react-hot-toast";
+import { usePermission } from "@/hooks/usePermission";
 
 const ActionCell = ({
   user,
@@ -23,6 +25,8 @@ const ActionCell = ({
   reloadData: () => void;
 }) => {
   const router = useRouter();
+  const canEdit = usePermission("admins.update");
+  const canDelete = usePermission("admins.delete");
 
   const onDelete = async () => {
     if (confirm("Are you sure you want to delete this admin?")) {
@@ -46,16 +50,20 @@ const ActionCell = ({
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-        <DropdownMenuItem
-          onClick={() => router.push(`/settings/admins/${user.id}`)}
-        >
-          <Pencil className="mr-2 h-4 w-4" />
-          Edit
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={onDelete} className="text-red-600">
-          <Trash className="mr-2 h-4 w-4" />
-          Delete
-        </DropdownMenuItem>
+        {canEdit && (
+          <DropdownMenuItem
+            onClick={() => router.push(`/settings/admins/${user.id}`)}
+          >
+            <Pencil className="mr-2 h-4 w-4" />
+            Edit
+          </DropdownMenuItem>
+        )}
+        {canDelete && (
+          <DropdownMenuItem onClick={onDelete} className="text-red-600">
+            <Trash className="mr-2 h-4 w-4" />
+            Delete
+          </DropdownMenuItem>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );
@@ -63,13 +71,25 @@ const ActionCell = ({
 
 export const getColumns = (reloadData: () => void): ColumnDef<AdminUser>[] => [
   {
-    accessorKey: "firstName",
+    accessorKey: "name",
     header: "Name",
-    cell: ({ row }) => `${row.original.firstName} ${row.original.lastName}`,
+    cell: ({ row }) => row.original.firstName ?? row.original.name ?? "-",
   },
   {
     accessorKey: "email",
     header: "Email",
+  },
+  {
+    accessorKey: "permissions",
+    header: "Permissions",
+    cell: ({ row }) => {
+      const count = row.original.permissions?.length ?? 0;
+      return (
+        <Badge variant="secondary">
+          {count} {count === 1 ? "permission" : "permissions"}
+        </Badge>
+      );
+    },
   },
   {
     accessorKey: "isActive",

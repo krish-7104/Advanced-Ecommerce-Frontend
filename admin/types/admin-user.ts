@@ -8,8 +8,9 @@ export interface Permission {
 
 export interface AdminUser {
   id: string;
-  firstName: string; // Mapped from name
-  lastName: string; // Mapped from name
+  name: string; // Backend field (single name string)
+  firstName?: string; // Optional: only present if split client-side
+  lastName?: string; // Optional: only present if split client-side
   email: string;
   phoneNumber?: string;
   isActive: boolean;
