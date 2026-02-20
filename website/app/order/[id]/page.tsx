@@ -184,7 +184,11 @@ export default function OrderDetailsPage() {
             <CardContent className="pt-6">
               <div className="space-y-6">
                 {order.items.map((item) => (
-                  <div key={item.id} className="flex gap-4">
+                  <Link
+                    key={item.id}
+                    href={`/product/${item.variant.product.slug}?variantId=${item.variant.id}`}
+                    className="flex gap-4"
+                  >
                     <div className="relative h-20 w-20 bg-slate-100 rounded-md overflow-hidden shrink-0 border border-slate-100">
                       {item.variant?.image?.url ? (
                         <Image
@@ -210,7 +214,7 @@ export default function OrderDetailsPage() {
                       </div>
                       <div className="text-sm text-slate-500 space-y-1">
                         <p>
-                          Qty: {item.quantity} × {formatPrice(item.price)}
+                          Qty: {item.quantity} x {formatPrice(item.price)}
                         </p>
                         {item.attributes &&
                           Object.entries(item.attributes).map(
@@ -228,7 +232,7 @@ export default function OrderDetailsPage() {
                           )}
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             </CardContent>

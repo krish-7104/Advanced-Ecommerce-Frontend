@@ -6,36 +6,48 @@ import Image from "next/image";
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "@/redux/store";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/helper/common-functions";
 import { useRouter } from "next/navigation";
-import { 
-  updateQuantity, 
+import {
+  updateQuantity,
   removeFromCart,
-  clearCartDB
+  clearCartDB,
 } from "@/redux/slices/cart.slice";
 
 export const CartSidebar = () => {
   const [open, setOpen] = useState(false);
   const [updatingItem, setUpdatingItem] = useState<string | null>(null);
   const router = useRouter();
-  
+
   const dispatch = useDispatch<AppDispatch>();
   const cart = useSelector((state: RootState) => state.cart.cart);
   const { isAuthenticated } = useSelector((state: RootState) => state.user);
 
   // Filter items that have variant data loaded
-  const items = cart?.filter((item) => item.variant !== null && item.variant !== undefined) ?? [];
-  
+  const items =
+    cart?.filter(
+      (item) => item.variant !== null && item.variant !== undefined,
+    ) ?? [];
+
   const count = items.length;
   const total = items.reduce((sum, item) => {
     if (!item.variant) return sum;
     const price = parseFloat(item.variant.price);
-    return sum + (price * item.quantity);
+    return sum + price * item.quantity;
   }, 0);
 
-  const handleUpdateQuantity = async (variantId: string, newQuantity: number) => {
+  const handleUpdateQuantity = async (
+    variantId: string,
+    newQuantity: number,
+  ) => {
     try {
       setUpdatingItem(variantId);
       await updateQuantity(
@@ -43,7 +55,7 @@ export const CartSidebar = () => {
         variantId,
         newQuantity,
         cart,
-        isAuthenticated
+        isAuthenticated,
       );
     } catch (error) {
       console.error("Failed to update quantity:", error);
@@ -55,12 +67,7 @@ export const CartSidebar = () => {
   const handleRemoveItem = async (variantId: string) => {
     try {
       setUpdatingItem(variantId);
-      await removeFromCart(
-        dispatch,
-        variantId,
-        cart,
-        isAuthenticated
-      );
+      await removeFromCart(dispatch, variantId, cart, isAuthenticated);
     } catch (error) {
       console.error("Failed to remove item:", error);
     } finally {
@@ -94,7 +101,10 @@ export const CartSidebar = () => {
           )}
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="flex flex-col p-0 w-full sm:max-w-md">
+      <SheetContent
+        side="right"
+        className="flex flex-col p-0 w-full sm:max-w-md"
+      >
         <SheetHeader className="px-6 py-4 border-b border-slate-100">
           <div className="flex items-center justify-between">
             <SheetTitle>Cart ({count})</SheetTitle>
@@ -124,7 +134,7 @@ export const CartSidebar = () => {
                 const price = parseFloat(item.variant.price);
                 const subtotal = price * item.quantity;
                 const isUpdating = updatingItem === item.variantId;
-                
+
                 return (
                   <div
                     key={item.variantId}
@@ -154,7 +164,9 @@ export const CartSidebar = () => {
                               className="object-contain p-1"
                             />
                           ) : (
-                            <span className="text-xs text-slate-400">No Image</span>
+                            <span className="text-xs text-slate-400">
+                              No Image
+                            </span>
                           )}
                         </div>
                       </Link>
@@ -164,7 +176,12 @@ export const CartSidebar = () => {
                           className="block text-sm font-medium text-slate-900 line-clamp-2 hover:text-slate-700"
                           onClick={() => setOpen(false)}
                         >
-                          {item.variant.product.name}
+                          {item.variant.product.name}{" "}
+                          {Object.entries(item.variant.attributes).map(
+                            ([key, value]) => (
+                              <span key={key}>{value + " "}</span>
+                            ),
+                          )}
                         </Link>
                         <div className="mt-1 flex items-center gap-2">
                           <span className="text-sm font-semibold text-slate-900">
@@ -177,12 +194,17 @@ export const CartSidebar = () => {
                               </span>
                             )}
                         </div>
-                        
+
                         {/* Quantity Controls */}
                         <div className="mt-2 flex items-center justify-between">
                           <div className="flex items-center border border-slate-100 rounded-sm">
                             <button
-                              onClick={() => handleUpdateQuantity(item.variantId, item.quantity - 1)}
+                              onClick={() =>
+                                handleUpdateQuantity(
+                                  item.variantId,
+                                  item.quantity - 1,
+                                )
+                              }
                               disabled={isUpdating || item.quantity <= 1}
                               className="px-2 py-1 text-slate-600 hover:bg-slate-50 transition-colors disabled:opacity-50"
                             >
@@ -192,8 +214,16 @@ export const CartSidebar = () => {
                               {item.quantity}
                             </span>
                             <button
-                              onClick={() => handleUpdateQuantity(item.variantId, item.quantity + 1)}
-                              disabled={isUpdating || item.quantity >= item.variant.stockAvailable}
+                              onClick={() =>
+                                handleUpdateQuantity(
+                                  item.variantId,
+                                  item.quantity + 1,
+                                )
+                              }
+                              disabled={
+                                isUpdating ||
+                                item.quantity >= item.variant.stockAvailable
+                              }
                               className="px-2 py-1 text-slate-600 hover:bg-slate-50 transition-colors disabled:opacity-50"
                             >
                               +
@@ -214,13 +244,15 @@ export const CartSidebar = () => {
         {items.length > 0 && (
           <div className="border-t border-slate-100 px-6 py-4 bg-white space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-base font-semibold text-slate-900">Total</span>
+              <span className="text-base font-semibold text-slate-900">
+                Total
+              </span>
               <span className="text-lg font-bold text-slate-900">
                 {formatPrice(total)}
               </span>
             </div>
-            <Button 
-              className="w-full" 
+            <Button
+              className="w-full"
               size="lg"
               onClick={() => {
                 setOpen(false);

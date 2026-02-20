@@ -29,6 +29,7 @@ export interface ProductVariantResponse {
     isPrimary: boolean;
     url: string;
   } | null;
+  attributes: Record<string, string>[];
 }
 
 export interface CategoryResponse {
@@ -63,7 +64,7 @@ export type AttributesSchema = Record<string, string[]>;
 
 export interface ProductVariantDetail extends Omit<
   ProductVariantResponse,
-  "product"
+  "product" | "attributes"
 > {
   images?: {
     id: string;
