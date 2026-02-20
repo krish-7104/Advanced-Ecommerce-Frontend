@@ -41,7 +41,6 @@ const Login = () => {
           withCredentials: true,
         },
       );
-      console.log(resp.data.data);
       if (resp.data.statusCode === 200) {
         toast.dismiss(loadingToastId);
         setUserHandler(resp.data.data);

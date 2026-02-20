@@ -38,10 +38,6 @@ const AdminsPage = () => {
     <section className="w-full min-h-screen bg-white">
       <div className="flex justify-between items-center pr-8">
         <PageTitle title="Admin Users" icon={<Users size={24} />} />
-        <Button onClick={() => router.push("/settings/admins/new")}>
-          <UserPlus className="mr-2 h-4 w-4" />
-          Add Admin
-        </Button>
       </div>
 
       <div className="container mx-auto py-8">
@@ -49,6 +45,12 @@ const AdminsPage = () => {
           columns={columns}
           data={admins}
           searchPlaceholder="Search admins..."
+          renderButtons={[
+            <Button onClick={() => router.push("/settings/admins/new")}>
+              <UserPlus className="mr-2 h-4 w-4" />
+              Add Admin
+            </Button>,
+          ]}
         />
       </div>
     </section>
