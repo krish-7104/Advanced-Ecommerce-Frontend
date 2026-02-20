@@ -98,6 +98,16 @@ const OrderDetailsPage = () => {
         return <Truck className="h-5 w-5 mr-2" />;
       case "CANCELLED":
         return <XCircle className="h-5 w-5 mr-2" />;
+      case "PAID":
+        return <CreditCard className="h-5 w-5 mr-2" />;
+      case "PACKED":
+        return <Package className="h-5 w-5 mr-2" />;
+      case "REFUNDED":
+        return <CreditCard className="h-5 w-5 mr-2" />;
+      case "PROCESSING":
+        return <Clock className="h-5 w-5 mr-2" />;
+      case "PENDING":
+        return <Clock className="h-5 w-5 mr-2" />;
       default:
         return <Clock className="h-5 w-5 mr-2" />;
     }
@@ -161,10 +171,12 @@ const OrderDetailsPage = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="PENDING">Pending</SelectItem>
-                <SelectItem value="PROCESSING">Processing</SelectItem>
+                <SelectItem value="PAID">Paid</SelectItem>
+                <SelectItem value="PACKED">Packed</SelectItem>
                 <SelectItem value="SHIPPED">Shipped</SelectItem>
                 <SelectItem value="DELIVERED">Delivered</SelectItem>
                 <SelectItem value="CANCELLED">Cancelled</SelectItem>
+                <SelectItem value="REFUNDED">Refunded</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -200,14 +212,12 @@ const OrderDetailsPage = () => {
                           </h4>
                           <ul className="text-sm text-muted-foreground mt-1 space-y-1">
                             {Object.entries(item.attributes).map(
-                              ([key, value]) => {
-                                return (
-                                  <li key={key}>
-                                    {key.charAt(0).toUpperCase() + key.slice(1)}
-                                    : {value}
-                                  </li>
-                                );
-                              },
+                              ([key, value]) => (
+                                <li key={key}>
+                                  {key.charAt(0).toUpperCase() + key.slice(1)}:{" "}
+                                  {value}
+                                </li>
+                              ),
                             )}
                           </ul>
                         </div>
@@ -222,6 +232,36 @@ const OrderDetailsPage = () => {
                       </div>
                     </div>
                   ))}
+                </div>
+              </CardContent>
+            </Card>
+            {/* Order Summary */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <CreditCard className="h-5 w-5 text-muted-foreground" />
+                  Order Summary
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Subtotal</span>
+                    <span>{formatPrice(subtotal)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Shipping</span>
+                    <span className="text-green-600">Free</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Tax</span>
+                    <span>Included</span>
+                  </div>
+                </div>
+                <Separator />
+                <div className="flex justify-between font-bold text-lg">
+                  <span>Total</span>
+                  <span>{formatPrice(order.totalAmount || subtotal)}</span>
                 </div>
               </CardContent>
             </Card>
@@ -276,37 +316,6 @@ const OrderDetailsPage = () => {
                   </p>
                   <p>{order.address.country}</p>
                 </address>
-              </CardContent>
-            </Card>
-
-            {/* Order Summary */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <CreditCard className="h-5 w-5 text-muted-foreground" />
-                  Order Summary
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Subtotal</span>
-                    <span>{formatPrice(subtotal)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Shipping</span>
-                    <span className="text-green-600">Free</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Tax</span>
-                    <span>Included</span>
-                  </div>
-                </div>
-                <Separator />
-                <div className="flex justify-between font-bold text-lg">
-                  <span>Total</span>
-                  <span>{formatPrice(order.totalAmount || subtotal)}</span>
-                </div>
               </CardContent>
             </Card>
           </div>

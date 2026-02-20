@@ -12,7 +12,7 @@ export interface Order {
     variantId: string;
     sku: string;
     name: string;
-    attributes: Record<string, { key: string; value: string }>;
+    attributes: Record<string, string>;
     price: string;
     mrp: string;
     quantity: number;
