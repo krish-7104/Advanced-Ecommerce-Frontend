@@ -46,7 +46,7 @@ export default function RootLayout({
           <Header />
           <main className="min-h-screen flex flex-col">{children}</main>
           <SiteFooter />
-          <Toaster position="bottom-right" richColors />
+          <Toaster position="bottom-right" />
         </ReduxProvider>
       </body>
     </html>

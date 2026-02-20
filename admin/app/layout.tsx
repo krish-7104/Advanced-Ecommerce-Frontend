@@ -1,7 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
-import { Toaster } from "react-hot-toast";
+import { Toaster } from "sonner";
 import { Providers } from "@/redux/provider";
 import Sidebar from "@/components/shared/sidebar";
 const montserrat = Poppins({

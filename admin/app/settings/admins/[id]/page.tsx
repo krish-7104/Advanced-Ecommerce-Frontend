@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 import { ArrowLeft, UserPlus, Save, CheckSquare, Square } from "lucide-react";
 import PageTitle from "@/components/shared/page-title";
 import { Button } from "@/components/ui/button";

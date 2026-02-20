@@ -14,7 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { MoreHorizontal, Pencil, Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
 import apiHelper from "@/lib/axios-helper";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import { usePermission } from "@/hooks/usePermission";
 
 const ActionCell = ({

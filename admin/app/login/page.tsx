@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import Link from "next/link";
 import { BASE_API_URL } from "@/lib/api-helper";
 import { setUserHandler } from "@/redux/actions";

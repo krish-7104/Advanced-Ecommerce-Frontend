@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,10 +31,10 @@ export default function LoginPage() {
     e.preventDefault();
 
     if (!email || !password) return;
-
+    let loadingToastId: string | number | undefined;
     try {
       setIsLoading(true);
-      toast.dismiss();
+      loadingToastId = toast.loading("Logging in...");
       const resp = await apiHelper.post("/auth/login", {
         email,
         password,
@@ -42,11 +42,14 @@ export default function LoginPage() {
 
       if (resp?.data?.statusCode === 200) {
         dispatch(setUser(resp.data.data));
+        toast.dismiss(loadingToastId);
         toast.success(resp.data.message || "Logged in successfully");
         router.push("/");
       }
     } catch (error: any) {
-      toast.dismiss();
+      if (loadingToastId) {
+        toast.dismiss(loadingToastId);
+      }
       toast.error(error?.response?.data?.message || "Failed to login");
     } finally {
       setIsLoading(false);

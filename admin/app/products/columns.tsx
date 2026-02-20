@@ -7,7 +7,7 @@ import { dateFormat } from "@/lib/common";
 import { useState } from "react";
 import DeleteModal from "@/components/shared/delete-modal";
 import apiHelper from "@/lib/axios-helper";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import StatusBadge from "@/components/shared/status-badge";
 import { usePermission } from "@/hooks/usePermission";

@@ -6,7 +6,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/redux/store";
 import { setUser, logout } from "@/redux/slices/user.slice";
 import apiHelper from "@/helper/axios-helper";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import {
   User,
   MapPin,

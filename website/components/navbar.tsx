@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/redux/store";
 import { logout } from "@/redux/slices/user.slice";
 import apiHelper from "@/helper/axios-helper";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import { Package, LogOut, ShoppingCart, User, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {

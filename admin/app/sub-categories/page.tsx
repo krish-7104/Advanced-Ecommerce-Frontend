@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 import { Boxes } from "lucide-react";
 import PageTitle from "@/components/shared/page-title";
 import { GenericDataTable } from "@/components/shared/generic-data-table";

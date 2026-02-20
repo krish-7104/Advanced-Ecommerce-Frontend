@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 import { Folder } from "lucide-react";
 import PageTitle from "@/components/shared/page-title";
 import { GenericDataTable } from "@/components/shared/generic-data-table";

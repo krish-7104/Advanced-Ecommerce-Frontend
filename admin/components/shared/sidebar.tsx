@@ -4,7 +4,7 @@ import { removeUserHandler } from "@/redux/actions";
 import { LogOut } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import { useDispatch } from "react-redux";
 import { navigationConfig } from "@/constants/navigation";
 import { useEffect, useState } from "react";
@@ -22,11 +22,11 @@ const Sidebar = () => {
   const isHidden = hiddenRoutes.some((r) => pathname.includes(r));
 
   const logoutHandler = () => {
-    toast.loading("Logging out...");
+    const loadingToastId = toast.loading("Logging out...");
     dispatch(removeUserHandler());
     localStorage.clear();
     router.replace("/login");
-    toast.dismiss();
+    toast.dismiss(loadingToastId);
     toast.success("Logged out");
   };
 

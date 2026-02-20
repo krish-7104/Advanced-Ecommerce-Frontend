@@ -3,7 +3,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import axios from "axios";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 const ResetPassword = () => {
   const [email, setEmail] = React.useState("");
@@ -15,18 +15,22 @@ const ResetPassword = () => {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) {
-      toast.dismiss()
       toast.error("Please enter your email");
       return;
     }
 
-    toast.loading("Initiating Password Reset..");
+    let loadingToastId: string | number | undefined;
     try {
+      loadingToastId = toast.loading("Initiating Password Reset..");
       const resp = await axios.post("/api/auth/forget", { email });
-      toast.dismiss();
+      if (loadingToastId) {
+        toast.dismiss(loadingToastId);
+      }
       toast.success(resp.data);
     } catch (error: any) {
-      toast.dismiss()
+      if (loadingToastId) {
+        toast.dismiss(loadingToastId);
+      }
       toast.error(error.response.data);
     }
   };

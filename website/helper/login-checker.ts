@@ -1,4 +1,4 @@
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import apiHelper from "./axios-helper";
 import { logout, setUser } from "@/redux/slices/user.slice";
 

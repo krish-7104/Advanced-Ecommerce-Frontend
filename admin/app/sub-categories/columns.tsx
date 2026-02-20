@@ -11,7 +11,7 @@ import DeleteModal from "@/components/shared/delete-modal";
 import { useRouter } from "next/navigation";
 import StatusBadge from "@/components/shared/status-badge";
 import apiHelper from "@/lib/axios-helper";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import { usePermission } from "@/hooks/usePermission";
 
 interface ActionCellProps {

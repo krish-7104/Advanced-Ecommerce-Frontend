@@ -15,7 +15,7 @@ import { Switch } from "@/components/ui/switch";
 import { Plus, UploadCloud, X, Image as ImageIcon } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import apiHelper from "@/lib/axios-helper";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import { Category } from "@/types/catalog";
 import { slugify } from "@/lib/common";
 

@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -46,7 +46,7 @@ export default function RegisterPage() {
       if (resp?.data?.statusCode === 201) {
         dispatch(setUser(resp.data.data));
         toast.success(resp.data.message || "Account created successfully");
-        router.push("/");
+        router.push(`/verify-email?email=${encodeURIComponent(email)}`);
       }
     } catch (error: any) {
       toast.dismiss();
