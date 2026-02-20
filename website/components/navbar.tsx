@@ -26,10 +26,8 @@ const Navbar = () => {
 
   const dispatch = useDispatch();
   const { user, isAuthenticated } = useSelector(
-    (state: RootState) => state.user
+    (state: RootState) => state.user,
   );
-
-  const wishlist = useSelector((state: RootState) => state.wishlist.wishlist);
 
   const handleLogout = async () => {
     try {
@@ -42,7 +40,7 @@ const Navbar = () => {
       dispatch(logout());
       toast.error(
         error?.response?.data?.message ||
-          "Something went wrong while logging out"
+          "Something went wrong while logging out",
       );
       router.push("/login");
     }
