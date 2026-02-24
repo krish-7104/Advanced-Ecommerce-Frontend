@@ -32,7 +32,7 @@ const CategoriesPage = () => {
   }, []);
 
   const parentCategories = categories.filter(
-    (c) => c.level === 0 || !c.parentId
+    (c) => c.level === 0 || !c.parentId,
   );
   const getSubcategories = (parentId: string) =>
     categories.filter((c) => c.parentId === parentId);
@@ -93,7 +93,7 @@ const CategoriesPage = () => {
                 <section key={parent.id}>
                   <div className="flex items-center justify-between mb-5">
                     <Link
-                      href={`/category/${parent.id}`}
+                      href={`/category/${parent.slug}`}
                       className="flex items-center gap-3 group"
                     >
                       {parent.image?.url ? (

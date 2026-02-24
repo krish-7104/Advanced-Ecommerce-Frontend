@@ -16,7 +16,7 @@ const EmailVerifyAlert = () => {
     pathname === "/verify-email";
 
   if (isOnAuthPage) return null;
-  if (user?.emailVerified) return null;
+  if (!user || user?.emailVerified) return null;
   return (
     <section className="bg-blue-100 p-2 sticky top-0 z-50">
       <div className="container max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between">
