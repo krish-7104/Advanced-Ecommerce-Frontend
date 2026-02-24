@@ -6,6 +6,7 @@ import ReduxProvider from "@/redux/provider";
 import Header from "@/components/navbar";
 import { AuthInitializer } from "@/components/auth-initializer";
 import { SiteFooter } from "@/components/layout/site-footer";
+import EmailVerifyAlert from "@/components/email-verify-alert";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -44,6 +45,7 @@ export default function RootLayout({
         <ReduxProvider>
           <AuthInitializer />
           <Header />
+          <EmailVerifyAlert />
           <main className="min-h-screen flex flex-col">{children}</main>
           <SiteFooter />
           <Toaster position="bottom-right" />

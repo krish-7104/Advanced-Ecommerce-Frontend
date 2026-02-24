@@ -31,8 +31,6 @@ export default function SendVerificationEmailPage() {
   useEffect(() => {
     if (!email) {
       router.push("/register");
-    } else {
-      setIsSent(true);
     }
   }, [email, router]);
 
@@ -81,11 +79,11 @@ export default function SendVerificationEmailPage() {
             Verify Your Email
           </CardTitle>
           <CardDescription className="text-slate-600">
-            We've sent a verification email to your email address
+            Send a verification email to your email address
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          {email && (
+          {isSent && email && (
             <div className="rounded-lg bg-blue-50 p-4 text-center">
               <p className="text-sm font-medium text-blue-900">
                 Email has been sent to:
@@ -105,8 +103,8 @@ export default function SendVerificationEmailPage() {
           </div>
 
           {isSent && (
-            <div className="flex items-center gap-2 rounded-lg bg-green-50 p-3 text-sm text-green-800">
-              <CheckCircle className="h-5 w-5 flex-shrink-0" />
+            <div className="flex items-center gap-2 rounded-lg bg-green-50 p-3 text-sm text-green-800 justify-center">
+              <CheckCircle className="h-5 w-5 shrink-0" />
               <span>Verification email sent successfully!</span>
             </div>
           )}
@@ -116,7 +114,11 @@ export default function SendVerificationEmailPage() {
             disabled={isSending || !email}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white"
           >
-            {isSending ? "Sending..." : "Resend Verification Email"}
+            {isSending
+              ? "Sending..."
+              : isSent
+                ? "Resend Verification Email"
+                : "Send Verification Email"}
           </Button>
 
           <div className="pt-4 border-t border-slate-200">
