@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/redux/store";
 import { setUser, logout } from "@/redux/slices/user.slice";
@@ -88,6 +88,8 @@ const STATES = [
 
 export default function MyAccountPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get("redirect");
   const dispatch = useDispatch();
   const { user, isAuthenticated } = useSelector(
     (state: RootState) => state.user,
@@ -100,6 +102,12 @@ export default function MyAccountPage() {
   const [deleteAccountDialogOpen, setDeleteAccountDialogOpen] = useState(false);
   const [editingAddress, setEditingAddress] = useState<Address | null>(null);
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
+
+  useEffect(() => {
+    if (redirect === "/checkout") {
+      setAddressDialogOpen(true);
+    }
+  }, [redirect]);
 
   const [personalDetails, setPersonalDetails] = useState({
     firstName: "",
@@ -200,6 +208,9 @@ export default function MyAccountPage() {
           setAddressDialogOpen(false);
           resetAddressForm();
           loadData();
+          if (redirect) {
+            router.push(redirect);
+          }
         }
       }
     } catch (error: any) {

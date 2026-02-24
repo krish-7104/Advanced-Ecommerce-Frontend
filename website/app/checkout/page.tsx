@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import apiHelper from "@/helper/axios-helper";
 import { fetchCart } from "@/redux/slices/cart.slice";
 import Loader from "@/components/loader";
+import Link from "next/link";
 
 interface Address {
   id: string;
@@ -43,7 +44,9 @@ const CheckoutPage = () => {
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
   const { cart } = useSelector((state: RootState) => state.cart);
-  const { isAuthenticated } = useSelector((state: RootState) => state.user);
+  const { isAuthenticated, user } = useSelector(
+    (state: RootState) => state.user,
+  );
 
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(
@@ -170,7 +173,9 @@ const CheckoutPage = () => {
                   </p>
                   <Button
                     variant={"outline"}
-                    onClick={() => router.push("/my-account")}
+                    onClick={() =>
+                      router.push("/my-account?redirect=/checkout")
+                    }
                   >
                     Add Address
                   </Button>
@@ -297,17 +302,15 @@ const CheckoutPage = () => {
                   <span>{formatPrice(total)}</span>
                 </div>
               </div>
-
-              <p className="text-xs text-slate-500 flex items-center gap-1">
-                <Check className="h-3.5 w-3.5 text-emerald-600" />
-                Secure checkout
-              </p>
               <Button
                 className="w-full rounded-2xl h-12 transition-all duration-200"
                 size="lg"
                 onClick={handlePlaceOrder}
                 disabled={
-                  placingOrder || !selectedAddressId || items.length === 0
+                  placingOrder ||
+                  !selectedAddressId ||
+                  items.length === 0 ||
+                  !user?.emailVerified
                 }
               >
                 {placingOrder ? (

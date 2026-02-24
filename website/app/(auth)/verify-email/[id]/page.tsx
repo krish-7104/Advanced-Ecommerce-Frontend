@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
@@ -20,6 +20,9 @@ import { RootState } from "@/redux/store";
 const VerifyEmailPage = () => {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectFromQuery = searchParams.get("redirect") || "";
+
   const id = params.id as string;
   const email = useSelector((state: RootState) => state.user.user?.email);
   const [status, setStatus] = useState<"loading" | "success" | "error">(
@@ -42,7 +45,9 @@ const VerifyEmailPage = () => {
           toast.success(resp.data.message || "Email verified successfully");
           setStatus("success");
           setTimeout(() => {
-            router.push("/");
+            if (redirectFromQuery) {
+              router.push(redirectFromQuery);
+            } else router.push("/");
           }, 2000);
         } else {
           throw new Error(resp?.data?.message || "Failed to verify email");
@@ -146,7 +151,8 @@ const VerifyEmailPage = () => {
                   Your email has been verified successfully!
                 </p>
                 <p className="mt-2 text-sm text-green-700">
-                  Redirecting to home page...
+                  Redirecting to{" "}
+                  {redirectFromQuery ? redirectFromQuery : "Home Page"}...
                 </p>
               </div>
               <Link href="/">

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
 import { Mail, ArrowLeft, CheckCircle } from "lucide-react";
@@ -21,6 +21,7 @@ export default function SendVerificationEmailPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const emailFromQuery = searchParams.get("email") || "";
+  const redirectFromQuery = searchParams.get("redirect") || "";
   const emailFromState = useSelector(
     (state: RootState) => state.user.user?.email,
   );
@@ -46,6 +47,7 @@ export default function SendVerificationEmailPage() {
       loadingToastId = toast.loading("Sending verification email...");
       const resp = await apiHelper.post("/auth/send-email-verification", {
         email,
+        redirect: redirectFromQuery,
       });
 
       if (resp?.data?.statusCode === 200) {

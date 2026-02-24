@@ -24,7 +24,11 @@ const EmailVerifyAlert = () => {
         <Button
           className="rounded-full border-0 cursor-pointer"
           variant={"link"}
-          onClick={() => router.push(`/verify-email?email=${user?.email}`)}
+          onClick={() =>
+            router.push(
+              `/verify-email?email=${user?.email}&redirect=${pathname}`,
+            )
+          }
         >
           Click here to verify your email{" "}
         </Button>
