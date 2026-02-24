@@ -4,7 +4,15 @@ import React, { useEffect, useState, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
 import Image from "next/image";
-import { Package, ShoppingCart, Heart, ChevronLeft, Check } from "lucide-react";
+import {
+  Package,
+  ShoppingCart,
+  Heart,
+  ChevronLeft,
+  Check,
+  Minus,
+  Plus,
+} from "lucide-react";
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "@/redux/store";
@@ -297,7 +305,6 @@ const ProductDetailPage = () => {
                   {Object.entries(product.attributesSchema).map(
                     ([name, values]) => {
                       const availableOptions = getAvailableOptions(name);
-
                       return (
                         <div key={name}>
                           <h3 className="text-sm font-semibold text-slate-900 mb-3">
@@ -369,7 +376,7 @@ const ProductDetailPage = () => {
                       className="px-4 py-2.5 text-slate-600 hover:bg-slate-50 transition-all duration-200 disabled:opacity-50"
                       disabled={quantity <= 1}
                     >
-                      −
+                      <Minus className="h-4 w-4" />
                     </button>
                     <span className="px-6 py-2.5 text-slate-900 font-medium border-x border-slate-200 min-w-[3rem] text-center">
                       {quantity}
@@ -378,13 +385,16 @@ const ProductDetailPage = () => {
                       type="button"
                       onClick={() =>
                         setQuantity(
-                          Math.min(selectedVariant.stockAvailable, quantity + 1)
+                          Math.min(
+                            selectedVariant.stockAvailable,
+                            quantity + 1,
+                          ),
                         )
                       }
                       className="px-4 py-2.5 text-slate-600 hover:bg-slate-50 transition-all duration-200 disabled:opacity-50"
                       disabled={quantity >= selectedVariant.stockAvailable}
                     >
-                      +
+                      <Plus className="h-4 w-4" />
                     </button>
                   </div>
                 </div>
@@ -417,7 +427,8 @@ const ProductDetailPage = () => {
                   disabled={isOutOfStock || addingToCart || !selectedVariant}
                   className={cn(
                     "flex-1 h-12 rounded-2xl w-full sm:w-auto transition-all duration-200",
-                    isInCart && "bg-emerald-600 hover:bg-emerald-700 text-white"
+                    isInCart &&
+                      "bg-emerald-600 hover:bg-emerald-700 text-white",
                   )}
                   size="lg"
                 >
