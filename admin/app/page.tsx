@@ -1,17 +1,52 @@
 "use client";
+import apiHelper from "@/lib/axios-helper";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { toast } from "sonner";
 const GREETINGS = {
   morning: "Good Morning",
   afternoon: "Good Afternoon",
   evening: "Good Evening",
 };
 
-
 const Home = () => {
   const [greet, setGreeting] = useState(GREETINGS.morning);
   const userData = useSelector((state: any) => state?.userData);
+  const [loading, setLoading] = useState(false);
+  const [stats, setStats] = useState<{
+    users: {
+      total: number;
+      dayChange: number;
+      dayChangePercentage: number;
+    };
+    orders: {
+      total: number;
+      dayChange: number;
+      dayChangePercentage: number;
+    };
+    revenue: {
+      total: number;
+      dayChange: number;
+      dayChangePercentage: number;
+    };
+    stockAdded: {
+      total: number;
+      dayChange: number;
+      dayChangePercentage: number;
+    };
+    products: {
+      total: number;
+      dayChange: number;
+      dayChangePercentage: number;
+    };
+  }>({
+    users: { total: 0, dayChange: 0, dayChangePercentage: 0 },
+    orders: { total: 0, dayChange: 0, dayChangePercentage: 0 },
+    revenue: { total: 0, dayChange: 0, dayChangePercentage: 0 },
+    stockAdded: { total: 0, dayChange: 0, dayChangePercentage: 0 },
+    products: { total: 0, dayChange: 0, dayChangePercentage: 0 },
+  });
   useEffect(() => {
     getGreetText();
   }, []);
@@ -26,11 +61,58 @@ const Home = () => {
       setGreeting(GREETINGS.evening);
     }
   };
+  useEffect(() => {
+    getStatsForCards();
+  }, []);
 
+  const getChangeMeta = (value: number, percentage: number) => {
+    const isIncrease = percentage > 0;
+    const isDecrease = percentage < 0;
+
+    const colorClass = isIncrease
+      ? "text-emerald-600"
+      : isDecrease
+        ? "text-red-600"
+        : "text-indigo-600";
+
+    const signedValue =
+      value > 0 ? `+${value}` : value < 0 ? `${value}` : `${value}`;
+    const signedPercentage =
+      percentage > 0
+        ? `+${percentage}`
+        : percentage < 0
+          ? `${percentage}`
+          : `${percentage}`;
+
+    return {
+      colorClass,
+      label: `${signedValue} (${signedPercentage}%)`,
+    };
+  };
+
+  const getStatsForCards = async () => {
+    setLoading(true);
+    try {
+      const response = await apiHelper.get("/dashboard/stats");
+      if (response?.data?.statusCode === 200) {
+        setStats(response?.data?.data);
+      }
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "Failed to load stats");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <main className="mx-auto bg-[#f6f6f6] flex justify-center h-[100vh] container overflow-x-hidden">
-      {userData && (
+      {!userData && (
+        <div className="flex justify-center items-center flex-col">
+          <Loader2 className="animate-spin" />
+          <p className="mt-2 text-gray-700">Getting Things Ready!</p>
+        </div>
+      )}
+      {userData && !loading && (
         <section className="mt-6 w-[92%]">
           <div className="w-full mb-4">
             <p className="font-semibold text-xl">
@@ -40,14 +122,113 @@ const Home = () => {
               Here what&lsquo;s happening with your store
             </p>
           </div>
-
+          <section className="mt-6 overflow-x-auto">
+            <div className="w-full mb-4 flex gap-4 flex-nowrap justify-between items-stretch">
+              <div className="bg-white shadow-sm border p-4 rounded-xl flex-1 min-w-[180px]">
+                <p className="text-sm text-gray-500">Users</p>
+                <p className="text-xl font-semibold">{stats.users.total}</p>
+                <p
+                  className={`mt-1 text-xs font-medium ${
+                    getChangeMeta(
+                      stats.users.dayChange,
+                      stats.users.dayChangePercentage,
+                    ).colorClass
+                  }`}
+                >
+                  {
+                    getChangeMeta(
+                      stats.users.dayChange,
+                      stats.users.dayChangePercentage,
+                    ).label
+                  }
+                </p>
+              </div>
+              <div className="bg-white shadow-sm border p-4 rounded-xl flex-1 min-w-[180px]">
+                <p className="text-sm text-gray-500">Orders</p>
+                <p className="text-xl font-semibold">{stats.orders.total}</p>
+                <p
+                  className={`mt-1 text-xs font-medium ${
+                    getChangeMeta(
+                      stats.orders.dayChange,
+                      stats.orders.dayChangePercentage,
+                    ).colorClass
+                  }`}
+                >
+                  {
+                    getChangeMeta(
+                      stats.orders.dayChange,
+                      stats.orders.dayChangePercentage,
+                    ).label
+                  }
+                </p>
+              </div>
+              <div className="bg-white shadow-sm border p-4 rounded-xl flex-1 min-w-[180px]">
+                <p className="text-sm text-gray-500">Revenue</p>
+                <p className="text-xl font-semibold">
+                  {stats.revenue.total.toLocaleString("en-IN", {
+                    style: "currency",
+                    currency: "INR",
+                  })}
+                </p>
+                <p
+                  className={`mt-1 text-xs font-medium ${
+                    getChangeMeta(
+                      stats.revenue.dayChange,
+                      stats.revenue.dayChangePercentage,
+                    ).colorClass
+                  }`}
+                >
+                  {
+                    getChangeMeta(
+                      stats.revenue.dayChange,
+                      stats.revenue.dayChangePercentage,
+                    ).label
+                  }
+                </p>
+              </div>
+              <div className="bg-white shadow-sm border p-4 rounded-xl flex-1 min-w-[180px]">
+                <p className="text-sm text-gray-500">Products</p>
+                <p className="text-xl font-semibold">{stats.products.total}</p>
+                <p
+                  className={`mt-1 text-xs font-medium ${
+                    getChangeMeta(
+                      stats.products.dayChange,
+                      stats.products.dayChangePercentage,
+                    ).colorClass
+                  }`}
+                >
+                  {
+                    getChangeMeta(
+                      stats.products.dayChange,
+                      stats.products.dayChangePercentage,
+                    ).label
+                  }
+                </p>
+              </div>
+              <div className="bg-white shadow-sm border p-4 rounded-xl flex-1 min-w-[180px]">
+                <p className="text-sm text-gray-500">Stock Added</p>
+                <p className="text-xl font-semibold">
+                  {stats.stockAdded.total}
+                </p>
+                <p
+                  className={`mt-1 text-xs font-medium ${
+                    getChangeMeta(
+                      stats.stockAdded.dayChange,
+                      stats.stockAdded.dayChangePercentage,
+                    ).colorClass
+                  }`}
+                >
+                  {
+                    getChangeMeta(
+                      stats.stockAdded.dayChange,
+                      stats.stockAdded.dayChangePercentage,
+                    ).label
+                  }
+                </p>
+              </div>
+            </div>
+          </section>
         </section>
-      )}
-      {!userData && (
-        <div className="flex justify-center items-center flex-col">
-          <Loader2 className="animate-spin" />
-          <p className="mt-2 text-gray-700">Getting Things Ready!</p>
-        </div>
       )}
     </main>
   );
