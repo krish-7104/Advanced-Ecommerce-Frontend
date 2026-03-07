@@ -14,6 +14,8 @@ import {
   Layers,
   ShieldCheck,
   Building2,
+  MessageSquare,
+  Star,
 } from "lucide-react";
 
 export interface NavItem {
@@ -86,6 +88,12 @@ export const navigationConfig: NavSection[] = [
           "product-variants.update",
           "product-variants.delete",
         ],
+      },
+      {
+        title: "Reviews",
+        route: "/reviews",
+        icon: Star,
+        permissions: ["reviews.view", "reviews.update", "reviews.delete"],
       },
     ],
   },

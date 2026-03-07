@@ -6,7 +6,7 @@ export const loginChecker = async (
   setLoading: React.Dispatch<React.SetStateAction<boolean>>,
   dispatch: any,
   router: any,
-  skipRedirect: boolean = false
+  skipRedirect: boolean = false,
 ) => {
   try {
     setLoading(true);
@@ -20,9 +20,7 @@ export const loginChecker = async (
   } catch (error: any) {
     toast.dismiss();
     if (!skipRedirect) {
-      toast.error(error?.response?.data?.message || "Session Expired");
       dispatch(logout());
-      router.replace("/login");
     } else {
       dispatch(logout());
     }

@@ -5,7 +5,7 @@ import { toast } from "sonner";
 export const loginChecker = async (
   setLoading: React.Dispatch<React.SetStateAction<boolean>>,
   dispatch: any,
-  router: any
+  router: any,
 ) => {
   let loadingToastId: string | number | undefined;
   try {

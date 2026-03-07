@@ -10,9 +10,7 @@ apiHelper.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-    const isAuthEndpoint =
-      originalRequest.url?.includes("/auth") &&
-      !originalRequest.url?.includes("/auth/about/me");
+    const isAuthEndpoint = originalRequest.url?.includes("/auth");
 
     if (isAuthEndpoint) {
       return Promise.reject(error);
@@ -27,8 +25,15 @@ apiHelper.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    const isAboutMe = originalRequest.url?.includes("/auth/about/me");
+
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !isAboutMe
+    ) {
       originalRequest._retry = true;
+
       try {
         await apiHelper.get("/auth/refresh");
         return apiHelper(originalRequest);
@@ -37,6 +42,8 @@ apiHelper.interceptors.response.use(
         return Promise.reject(error);
       }
     }
+
+    return Promise.reject(error);
 
     return Promise.reject(error);
   },
