@@ -18,6 +18,7 @@ import {
   Minus,
   Plus,
   Star,
+  X,
 } from "lucide-react";
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
@@ -581,100 +582,187 @@ const ProductDetailPage = () => {
               </div>
             </div>
 
-            <Dialog
-              open={isReviewDialogOpen}
-              onOpenChange={setIsReviewDialogOpen}
+            <Button
+              variant="outline"
+              className="rounded-xl"
+              onClick={() => {
+                if (isAuthenticated) {
+                  setIsReviewDialogOpen(true);
+                } else {
+                  router.push(`/login?redirect=${pathname}`);
+                }
+              }}
             >
-              <Button
-                variant="outline"
-                className="rounded-xl"
-                onClick={() => {
-                  if (isAuthenticated) {
-                    setIsReviewDialogOpen(true);
-                  } else {
-                    router.push(`/login?redirect=${pathname}`);
-                  }
-                }}
-              >
-                Write a Review
-              </Button>
-              <DialogContent className="sm:max-w-125 rounded-3xl">
-                <DialogHeader>
-                  <DialogTitle className="text-xl font-bold">
-                    Write a Review
-                  </DialogTitle>
-                </DialogHeader>
-                <form onSubmit={handleReviewSubmit} className="space-y-6 pt-4">
-                  <div className="space-y-3">
-                    <label className="text-sm font-semibold text-slate-900">
-                      Rating
-                    </label>
-                    <div className="flex gap-2">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <button
-                          key={star}
-                          type="button"
-                          onClick={() =>
-                            setReviewForm({ ...reviewForm, rating: star })
-                          }
-                          className="focus:outline-none"
-                        >
-                          <Star
-                            className={cn(
-                              "h-8 w-8 transition-all duration-200",
-                              star <= reviewForm.rating
-                                ? "fill-amber-400 text-amber-400 scale-110"
-                                : "fill-slate-100 text-slate-100 hover:fill-slate-200",
-                            )}
+              Write a Review
+            </Button>
+
+            {/* Custom Review Modal */}
+            {isReviewDialogOpen && (
+              <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 md:p-10">
+                {/* Backdrop */}
+                <div
+                  className="absolute inset-0 bg-slate-900/40 backdrop-blur-md transition-opacity duration-300"
+                  onClick={() => setIsReviewDialogOpen(false)}
+                />
+
+                {/* Modal Container */}
+                <div className="relative w-full max-w-6xl bg-white rounded-[2rem] shadow-2xl overflow-hidden flex flex-col md:flex-row max-h-[90vh] animate-in fade-in zoom-in duration-300">
+                  {/* Left Side: Product Info */}
+                  <div className="md:w-5/12 bg-slate-50 p-8 md:p-12 flex flex-col justify-between border-b md:border-b-0 md:border-r border-slate-100">
+                    <div>
+                      <Badge className="mb-6 bg-blue-50 text-blue-600 border-blue-100 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                        Reviewing Product
+                      </Badge>
+                      <h3 className="text-3xl font-black text-slate-900 mb-4 leading-tight">
+                        {product?.name}
+                      </h3>
+                      <div className="flex items-center gap-2 mb-8">
+                        <Rating rating={averageRating} size="sm" />
+                        <span className="text-slate-500 font-medium text-sm">
+                          ({reviews.length} reviews)
+                        </span>
+                      </div>
+
+                      {selectedVariant && (
+                        <div className="flex flex-wrap gap-2">
+                          {Object.entries(
+                            selectedVariant.attributes as Record<
+                              string,
+                              string
+                            >,
+                          ).map(([key, value]) => (
+                            <span
+                              key={key}
+                              className="bg-white border border-slate-200 px-3 py-1.5 rounded-xl text-xs font-bold text-slate-700 shadow-sm"
+                            >
+                              {key}: {value}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="hidden md:block mt-8">
+                      <div className="aspect-square rounded-3xl overflow-hidden bg-white shadow-inner border border-slate-100 flex items-center justify-center p-6">
+                        {selectedVariant?.images &&
+                        selectedVariant.images.length > 0 ? (
+                          <img
+                            src={selectedVariant.images[0].url}
+                            alt={product?.name}
+                            className="w-full h-full object-contain"
                           />
-                        </button>
-                      ))}
+                        ) : selectedVariant?.image?.url ? (
+                          <img
+                            src={selectedVariant.image.url}
+                            alt={product?.name}
+                            className="w-full h-full object-contain"
+                          />
+                        ) : (
+                          <Package className="h-20 w-20 text-slate-100" />
+                        )}
+                      </div>
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-slate-900">
-                      Title
-                    </label>
-                    <Input
-                      placeholder="Review title"
-                      value={reviewForm.title}
-                      onChange={(e) =>
-                        setReviewForm({
-                          ...reviewForm,
-                          title: e.target.value,
-                        })
-                      }
-                      className="rounded-xl h-12"
-                    />
+
+                  {/* Right Side: Form */}
+                  <div className="md:w-7/12 p-8 md:p-12 overflow-y-auto">
+                    <div className="flex justify-between items-center mb-10">
+                      <h4 className="text-2xl font-bold text-slate-900">
+                        Write Your Review
+                      </h4>
+                      <button
+                        onClick={() => setIsReviewDialogOpen(false)}
+                        className="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 hover:text-slate-900 transition-colors"
+                      >
+                        <X size={20} />
+                      </button>
+                    </div>
+
+                    <form onSubmit={handleReviewSubmit} className="space-y-8">
+                      <div className="space-y-4">
+                        <label className="text-sm font-bold text-slate-900 uppercase tracking-widest">
+                          Overall Rating
+                        </label>
+                        <div className="flex gap-3">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <button
+                              key={star}
+                              type="button"
+                              onClick={() =>
+                                setReviewForm({ ...reviewForm, rating: star })
+                              }
+                              className="group focus:outline-none"
+                            >
+                              <Star
+                                className={cn(
+                                  "h-12 w-12 transition-all duration-300",
+                                  star <= reviewForm.rating
+                                    ? "fill-amber-400 text-amber-400 scale-110 shadow-star"
+                                    : "fill-slate-100 text-slate-100 group-hover:fill-slate-200",
+                                )}
+                              />
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="space-y-3">
+                        <label className="text-sm font-bold text-slate-900 uppercase tracking-widest">
+                          Review Title
+                        </label>
+                        <Input
+                          placeholder="What's the most important thing to know?"
+                          value={reviewForm.title}
+                          onChange={(e) =>
+                            setReviewForm({
+                              ...reviewForm,
+                              title: e.target.value,
+                            })
+                          }
+                          className="rounded-2xl h-14 border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-50/50 transition-all duration-300 font-medium"
+                        />
+                      </div>
+
+                      <div className="space-y-3">
+                        <label className="text-sm font-bold text-slate-900 uppercase tracking-widest">
+                          Your Review
+                        </label>
+                        <textarea
+                          placeholder="Tell us what you liked or disliked about this product..."
+                          rows={6}
+                          value={reviewForm.comment}
+                          onChange={(e) =>
+                            setReviewForm({
+                              ...reviewForm,
+                              comment: e.target.value,
+                            })
+                          }
+                          className="flex w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 text-base transition-all duration-300 placeholder:text-slate-400 focus-visible:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-50/50 resize-none font-medium min-h-[150px]"
+                          required
+                        />
+                      </div>
+
+                      <div className="pt-4">
+                        <Button
+                          type="submit"
+                          className="w-full h-16 rounded-2xl text-lg font-bold bg-slate-900 hover:bg-black shadow-xl shadow-slate-200 transition-all duration-300"
+                          disabled={submittingReview}
+                        >
+                          {submittingReview ? (
+                            <div className="flex items-center gap-2">
+                              <span className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                              Submitting...
+                            </div>
+                          ) : (
+                            "Share My Experience"
+                          )}
+                        </Button>
+                      </div>
+                    </form>
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-slate-900">
-                      Review
-                    </label>
-                    <textarea
-                      placeholder="Share your thoughts about the product..."
-                      rows={5}
-                      value={reviewForm.comment}
-                      onChange={(e) =>
-                        setReviewForm({
-                          ...reviewForm,
-                          comment: e.target.value,
-                        })
-                      }
-                      className="flex min-h-20 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none"
-                      required
-                    />
-                  </div>
-                  <Button
-                    type="submit"
-                    className="w-full h-12 rounded-xl"
-                    disabled={submittingReview}
-                  >
-                    {submittingReview ? "Submitting..." : "Submit Review"}
-                  </Button>
-                </form>
-              </DialogContent>
-            </Dialog>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="space-y-8">
