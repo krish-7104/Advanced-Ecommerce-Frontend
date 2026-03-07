@@ -19,6 +19,8 @@ import {
   Plus,
   Star,
   X,
+  Pencil,
+  Trash2,
 } from "lucide-react";
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
@@ -74,6 +76,7 @@ const ProductDetailPage = () => {
     comment: "",
   });
   const [isReviewDialogOpen, setIsReviewDialogOpen] = useState(false);
+  const [editingReviewId, setEditingReviewId] = useState<string | null>(null);
 
   const dispatch = useDispatch<AppDispatch>();
   const cart = useSelector((state: RootState) => state.cart.cart);
@@ -125,11 +128,21 @@ const ProductDetailPage = () => {
 
     try {
       setSubmittingReview(true);
-      const response = await axios.post(
-        `${BASE_API_URL}/review/${selectedVariant.id}`,
-        reviewForm,
-        { withCredentials: true },
-      );
+      let response;
+      if (editingReviewId) {
+        response = await axios.patch(
+          `${BASE_API_URL}/review/${editingReviewId}`,
+          reviewForm,
+          { withCredentials: true },
+        );
+      } else {
+        response = await axios.post(
+          `${BASE_API_URL}/review/${selectedVariant.id}`,
+          reviewForm,
+          { withCredentials: true },
+        );
+      }
+
       if (response.data?.success) {
         // Refresh reviews
         const res = await axios.get(
@@ -137,12 +150,41 @@ const ProductDetailPage = () => {
         );
         setReviews(res.data.data);
         setIsReviewDialogOpen(false);
+        setEditingReviewId(null);
         setReviewForm({ rating: 5, title: "", comment: "" });
       }
     } catch (err) {
       console.error("Failed to submit review:", err);
     } finally {
       setSubmittingReview(false);
+    }
+  };
+
+  const handleEditReview = (review: any) => {
+    setEditingReviewId(review.id);
+    setReviewForm({
+      rating: review.rating,
+      title: review.title || "",
+      comment: review.comment,
+    });
+    setIsReviewDialogOpen(true);
+  };
+
+  const handleDeleteReview = async (reviewId: string) => {
+    if (!confirm("Are you sure you want to delete this review?")) return;
+
+    try {
+      const response = await axios.delete(
+        `${BASE_API_URL}/review/${reviewId}`,
+        {
+          withCredentials: true,
+        },
+      );
+      if (response.data?.success) {
+        setReviews((prev) => prev.filter((r) => r.id !== reviewId));
+      }
+    } catch (err) {
+      console.error("Failed to delete review:", err);
     }
   };
 
@@ -277,7 +319,7 @@ const ProductDetailPage = () => {
   if (!product) {
     return (
       <div className="min-h-screen bg-white">
-        <div className="container mx-auto max-w-6xl px-4 sm:px-6 py-10">
+        <div className="container mx-auto max-w-7xl px-4 sm:px-6 py-10">
           <div className="text-center py-16">
             <Package className="h-16 w-16 text-slate-300 mx-auto mb-4" />
             <h2 className="text-xl font-semibold text-slate-900 mb-2">
@@ -587,6 +629,8 @@ const ProductDetailPage = () => {
               className="rounded-xl"
               onClick={() => {
                 if (isAuthenticated) {
+                  setEditingReviewId(null);
+                  setReviewForm({ rating: 5, title: "", comment: "" });
                   setIsReviewDialogOpen(true);
                 } else {
                   router.push(`/login?redirect=${pathname}`);
@@ -598,7 +642,7 @@ const ProductDetailPage = () => {
 
             {/* Custom Review Modal */}
             {isReviewDialogOpen && (
-              <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 md:p-10">
+              <div className="fixed inset-0 z-100 flex items-center justify-center p-4 sm:p-6 md:p-10">
                 {/* Backdrop */}
                 <div
                   className="absolute inset-0 bg-slate-900/40 backdrop-blur-md transition-opacity duration-300"
@@ -606,7 +650,7 @@ const ProductDetailPage = () => {
                 />
 
                 {/* Modal Container */}
-                <div className="relative w-full max-w-6xl bg-white rounded-[2rem] shadow-2xl overflow-hidden flex flex-col md:flex-row max-h-[90vh] animate-in fade-in zoom-in duration-300">
+                <div className="relative w-full max-w-7xl bg-white rounded-[2rem] shadow-2xl overflow-hidden flex flex-col md:flex-row max-h-[90vh] animate-in fade-in zoom-in duration-300">
                   {/* Left Side: Product Info */}
                   <div className="md:w-5/12 bg-slate-50 p-8 md:p-12 flex flex-col justify-between border-b md:border-b-0 md:border-r border-slate-100">
                     <div>
@@ -668,7 +712,9 @@ const ProductDetailPage = () => {
                   <div className="md:w-7/12 p-8 md:p-12 overflow-y-auto">
                     <div className="flex justify-between items-center mb-10">
                       <h4 className="text-2xl font-bold text-slate-900">
-                        Write Your Review
+                        {editingReviewId
+                          ? "Edit Your Review"
+                          : "Write Your Review"}
                       </h4>
                       <button
                         onClick={() => setIsReviewDialogOpen(false)}
@@ -803,16 +849,36 @@ const ProductDetailPage = () => {
                           <Rating rating={review.rating} size="sm" />
                         </div>
                       </div>
-                      <span className="text-xs text-slate-400 font-medium">
-                        {new Date(review.createdAt).toLocaleDateString(
-                          "en-US",
-                          {
-                            month: "short",
-                            day: "numeric",
-                            year: "numeric",
-                          },
+                      <div className="flex items-center gap-4">
+                        {currentUser?.id === review.userId && (
+                          <div className="flex items-center gap-2 mr-4">
+                            <button
+                              onClick={() => handleEditReview(review)}
+                              className="p-2 rounded-lg bg-slate-50 text-slate-400 hover:bg-blue-50 hover:text-blue-600 transition-all"
+                              title="Edit Review"
+                            >
+                              <Pencil size={14} />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteReview(review.id)}
+                              className="p-2 rounded-lg bg-slate-50 text-slate-400 hover:bg-red-50 hover:text-red-600 transition-all"
+                              title="Delete Review"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
                         )}
-                      </span>
+                        <span className="text-xs text-slate-400 font-medium">
+                          {new Date(review.createdAt).toLocaleDateString(
+                            "en-US",
+                            {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                            },
+                          )}
+                        </span>
+                      </div>
                     </div>
 
                     <div className="space-y-2">

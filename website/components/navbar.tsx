@@ -6,7 +6,7 @@ import { RootState } from "@/redux/store";
 import { logout } from "@/redux/slices/user.slice";
 import apiHelper from "@/helper/axios-helper";
 import { toast } from "sonner";
-import { Package, LogOut, ShoppingCart, User, Heart } from "lucide-react";
+import { Package, LogOut, ShoppingCart, User, Heart, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -91,7 +91,7 @@ const Navbar = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
-                  className="w-56 bg-white border-slate-100 rounded-2xl shadow-[var(--shadow-soft)]"
+                  className="w-56 bg-white border-slate-100 rounded-2xl shadow-(--shadow-soft)"
                   align="end"
                 >
                   <DropdownMenuLabel className="font-normal">
@@ -116,6 +116,14 @@ const Navbar = () => {
                   >
                     <Package className="mr-2 h-4 w-4" />
                     My Orders
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className="bg-slate-100" />
+                  <DropdownMenuItem
+                    onClick={() => router.push("/my-account/reviews")}
+                    className="text-slate-600 focus:text-slate-900 focus:bg-slate-50 cursor-pointer"
+                  >
+                    <Star className="mr-2 h-4 w-4" />
+                    My Reviews
                   </DropdownMenuItem>
                   <DropdownMenuSeparator className="bg-slate-100" />
                   <DropdownMenuItem

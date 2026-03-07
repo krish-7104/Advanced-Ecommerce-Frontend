@@ -11,14 +11,11 @@ import {
   Package,
   ChevronRight,
   Check,
+  Pencil,
+  Trash2,
+  X,
 } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Rating } from "@/components/ui/rating";
 import Image from "next/image";
@@ -50,6 +47,13 @@ export default function MyReviewsPage() {
   const { isAuthenticated } = useSelector((state: RootState) => state.user);
   const [reviews, setReviews] = useState<UserReview[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editingReview, setEditingReview] = useState<UserReview | null>(null);
+  const [reviewForm, setReviewForm] = useState({
+    rating: 5,
+    title: "",
+    comment: "",
+  });
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchMyReviews = async () => {
@@ -74,16 +78,74 @@ export default function MyReviewsPage() {
     }
   }, [isAuthenticated]);
 
+  const handleDeleteReview = async (reviewId: string) => {
+    if (!confirm("Are you sure you want to delete this review?")) return;
+
+    try {
+      const response = await apiHelper.delete(`/review/${reviewId}`);
+      if (response.data?.success) {
+        toast.success("Review deleted successfully");
+        setReviews((prev) => prev.filter((r) => r.id !== reviewId));
+      }
+    } catch (err: any) {
+      console.error("Failed to delete review:", err);
+      toast.error(err?.response?.data?.message || "Failed to delete review");
+    }
+  };
+
+  const handleEditClick = (review: UserReview) => {
+    setEditingReview(review);
+    setReviewForm({
+      rating: review.rating,
+      title: review.title || "",
+      comment: review.comment,
+    });
+  };
+
+  const handleUpdateReview = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingReview) return;
+
+    try {
+      setSubmitting(true);
+      const response = await apiHelper.patch(
+        `/review/${editingReview.id}`,
+        reviewForm,
+      );
+      if (response.data?.success) {
+        toast.success("Review updated successfully");
+        setReviews((prev) =>
+          prev.map((r) =>
+            r.id === editingReview.id
+              ? {
+                  ...r,
+                  rating: reviewForm.rating,
+                  title: reviewForm.title,
+                  comment: reviewForm.comment,
+                }
+              : r,
+          ),
+        );
+        setEditingReview(null);
+      }
+    } catch (err: any) {
+      console.error("Failed to update review:", err);
+      toast.error(err?.response?.data?.message || "Failed to update review");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   if (loading) {
     return (
-      <div className="min-h-[400px] flex items-center justify-center">
+      <div className="min-h-100 flex items-center justify-center">
         <Loader />
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto max-w-6xl px-4 sm:px-6 py-12">
+    <div className="container mx-auto max-w-7xl px-4 sm:px-6 py-8">
       <div className="flex flex-col gap-8">
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
@@ -121,7 +183,7 @@ export default function MyReviewsPage() {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid gap-6">
+          <div className="grid gap-4">
             {reviews.map((review) => (
               <Card
                 key={review.id}
@@ -130,9 +192,9 @@ export default function MyReviewsPage() {
                 <CardContent className="p-0">
                   <div className="flex flex-col md:flex-row">
                     {/* Product Info Sidebar */}
-                    <div className="w-full md:w-64 bg-slate-50/50 p-6 border-b md:border-b-0 md:border-r border-slate-100">
+                    <div className="w-full md:w-56 bg-slate-50/50 p-4 border-b md:border-b-0 md:border-r border-slate-100">
                       <div className="flex flex-col gap-4">
-                        <div className="relative aspect-square w-24 mx-auto md:mx-0 bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+                        <div className="relative aspect-square w-20 mx-auto md:mx-0 bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
                           {review.variant.image?.url ? (
                             <Image
                               src={review.variant.image.url}
@@ -171,26 +233,17 @@ export default function MyReviewsPage() {
                     </div>
 
                     {/* Review Content */}
-                    <div className="flex-1 p-6">
+                    <div className="flex-1 p-4">
                       <div className="flex flex-col h-full">
-                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-2">
                           <div className="space-y-1">
-                            <Rating rating={review.rating} size="sm" />
                             <div className="flex items-center gap-2">
                               <h3 className="font-bold text-slate-900 text-lg">
-                                {review.title || "Untitled Review"}
+                                {review.title || ""}
                               </h3>
                               {review.isVerified && (
                                 <Badge className="bg-emerald-50 text-emerald-700 border-none px-2 py-0.5 text-[10px] uppercase tracking-wider font-bold">
                                   <Check className="h-3 w-3 mr-1" /> Verified
-                                </Badge>
-                              )}
-                              {!review.isVisible && (
-                                <Badge
-                                  variant="outline"
-                                  className="text-[10px] uppercase font-bold text-slate-400"
-                                >
-                                  Hidden by Admin
                                 </Badge>
                               )}
                             </div>
@@ -206,10 +259,27 @@ export default function MyReviewsPage() {
                             )}
                           </span>
                         </div>
-                        <p className="text-slate-600 leading-relaxed mb-6">
+                        <p className="text-slate-600 leading-relaxed mb-4 line-clamp-2">
                           {review.comment}
                         </p>
-                        <div className="mt-auto pt-4 border-t border-slate-50 flex justify-end">
+                        <Rating rating={review.rating} size="sm" />
+                        <div className="mt-auto pt-2 border-t border-slate-50 flex justify-between items-center">
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => handleEditClick(review)}
+                              className="p-2 rounded-lg bg-slate-50 text-slate-400 hover:bg-blue-50 hover:text-blue-600 transition-all shadow-sm"
+                              title="Edit Review"
+                            >
+                              <Pencil size={14} />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteReview(review.id)}
+                              className="p-2 rounded-lg bg-slate-50 text-slate-400 hover:bg-red-50 hover:text-red-600 transition-all shadow-sm"
+                              title="Delete Review"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
                           <Link
                             href={`/product/${review.variant.product.slug}`}
                           >
@@ -232,6 +302,101 @@ export default function MyReviewsPage() {
           </div>
         )}
       </div>
+
+      {/* Edit Review Modal */}
+      {editingReview && (
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-slate-900/40 backdrop-blur-md"
+            onClick={() => setEditingReview(null)}
+          />
+          <div className="relative w-full max-w-2xl bg-white rounded-[2rem] shadow-2xl p-8 animate-in fade-in zoom-in duration-300">
+            <div className="flex justify-between items-center mb-8">
+              <div>
+                <h3 className="text-2xl font-bold text-slate-900">
+                  Edit Your Review
+                </h3>
+                <p className="text-slate-500 text-sm">
+                  Reviewing {editingReview.variant.product.name}
+                </p>
+              </div>
+              <button
+                onClick={() => setEditingReview(null)}
+                className="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 hover:text-slate-900 transition-colors"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdateReview} className="space-y-6">
+              <div className="space-y-3">
+                <label className="text-sm font-bold text-slate-900 uppercase tracking-widest">
+                  Rating
+                </label>
+                <div className="flex gap-2">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() =>
+                        setReviewForm({ ...reviewForm, rating: star })
+                      }
+                      className="focus:outline-none group"
+                    >
+                      <Star
+                        className={`h-10 w-10 transition-all duration-200 ${
+                          star <= reviewForm.rating
+                            ? "fill-amber-400 text-amber-400 scale-110 shadow-star"
+                            : "fill-slate-100 text-slate-100 group-hover:fill-slate-200"
+                        }`}
+                      />
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-slate-900 uppercase tracking-widest">
+                  Review Title
+                </label>
+                <input
+                  type="text"
+                  value={reviewForm.title}
+                  onChange={(e) =>
+                    setReviewForm({ ...reviewForm, title: e.target.value })
+                  }
+                  className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-base outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-50/50 transition-all"
+                  placeholder="Review title"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-slate-900 uppercase tracking-widest">
+                  Your Review
+                </label>
+                <textarea
+                  value={reviewForm.comment}
+                  onChange={(e) =>
+                    setReviewForm({ ...reviewForm, comment: e.target.value })
+                  }
+                  rows={4}
+                  className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 text-base outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-50/50 transition-all resize-none font-medium min-h-[120px]"
+                  placeholder="Share your thoughts..."
+                  required
+                />
+              </div>
+
+              <Button
+                type="submit"
+                className="w-full h-14 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-lg shadow-blue-200 transition-all"
+                disabled={submitting}
+              >
+                {submitting ? "Updating..." : "Update Review"}
+              </Button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

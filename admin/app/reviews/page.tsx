@@ -2,7 +2,16 @@
 
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Star, Eye, EyeOff, Check, User, Package } from "lucide-react";
+import {
+  Star,
+  Eye,
+  EyeOff,
+  Check,
+  User,
+  Package,
+  Trash2,
+  Pencil,
+} from "lucide-react";
 import PageTitle from "@/components/shared/page-title";
 import { GenericDataTable } from "@/components/shared/generic-data-table";
 import apiHelper from "@/lib/axios-helper";
@@ -13,6 +22,7 @@ import PermissionGuard from "@/components/shared/permission-guard";
 import { Badge } from "@/components/ui/badge";
 import { ColumnDef } from "@tanstack/react-table";
 import { Switch } from "@/components/ui/switch";
+import DeleteModal from "@/components/shared/delete-modal";
 
 interface Review {
   id: string;
@@ -40,13 +50,16 @@ const ReviewsPage = () => {
   const metadata = getPageMetadata("/reviews");
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
+  const [reviewToDelete, setReviewToDelete] = useState<string | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
 
   const fetchReviews = async () => {
     setLoading(true);
     try {
       const res = await apiHelper.get("/admin/review");
       if (!res?.data?.data) throw new Error("Invalid API response");
-      setReviews(res.data.data);
+      setReviews(res.data.data.reviews || []);
     } catch (error: any) {
       toast.dismiss();
       toast.error(error?.response?.data?.message || "Failed to load reviews");
@@ -78,8 +91,28 @@ const ReviewsPage = () => {
     }
   };
 
+  const deleteReview = async () => {
+    if (!reviewToDelete) return;
+
+    setIsDeleting(true);
+    try {
+      const res = await apiHelper.delete(`/admin/review/${reviewToDelete}`);
+      if (res.data?.success) {
+        toast.success(res.data.message || "Review deleted successfully");
+        setReviews((prev) => prev.filter((r) => r.id !== reviewToDelete));
+        setIsDeleteModalOpen(false);
+        setReviewToDelete(null);
+      }
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "Failed to delete review");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   const columns: ColumnDef<Review>[] = [
     {
+      id: "product",
       accessorKey: "variant.product.name",
       header: "Product",
       cell: ({ row }) => {
@@ -128,7 +161,7 @@ const ReviewsPage = () => {
       ),
     },
     {
-      accessorKey: "content",
+      accessorKey: "comment",
       header: "Review",
       cell: ({ row }) => (
         <div className="max-w-[300px]">
@@ -179,6 +212,25 @@ const ReviewsPage = () => {
         </span>
       ),
     },
+    {
+      id: "actions",
+      header: "Actions",
+      cell: ({ row }) => (
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50"
+            onClick={() => {
+              setReviewToDelete(row.original.id);
+              setIsDeleteModalOpen(true);
+            }}
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
+      ),
+    },
   ];
 
   return (
@@ -198,11 +250,24 @@ const ReviewsPage = () => {
             <GenericDataTable
               columns={columns}
               data={reviews}
-              searchPlaceholder="Search reviews by product or user..."
+              searchKey="product"
+              searchPlaceholder="Search reviews by product name..."
             />
           </div>
         )}
       </section>
+
+      <DeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setReviewToDelete(null);
+        }}
+        onConfirm={deleteReview}
+        loading={isDeleting}
+        title="Delete Review"
+        description="Are you sure you want to delete this review? This action cannot be undone."
+      />
     </PermissionGuard>
   );
 };

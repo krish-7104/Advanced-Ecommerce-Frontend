@@ -58,12 +58,12 @@ const CategoriesPage = () => {
     return (
       <div className="min-h-screen bg-white">
         <div className="border-b border-slate-100">
-          <div className="container mx-auto max-w-6xl px-4 sm:px-6 py-6">
+          <div className="container mx-auto max-w-7xl px-4 sm:px-6 py-6">
             <Skeleton className="h-4 w-32 mb-3" />
             <Skeleton className="h-8 w-48" />
           </div>
         </div>
-        <div className="container mx-auto max-w-6xl">
+        <div className="container mx-auto max-w-7xl">
           {[1, 2, 3].map((i) => (
             <div key={i} className="mb-10">
               <div className="flex items-center justify-between mb-4">
@@ -101,7 +101,7 @@ const CategoriesPage = () => {
         ]}
       />
 
-      <div className="container mx-auto max-w-6xl px-4 sm:px-6 py-6">
+      <div className="container mx-auto max-w-7xl px-4 sm:px-6 py-6">
         {products.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-slate-500">No products found in this category</p>

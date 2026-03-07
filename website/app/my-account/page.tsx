@@ -321,37 +321,7 @@ export default function MyAccountPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 py-12">
-      <div className="container mx-auto max-w-6xl px-4 sm:px-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Link href="/my-account/orders" className="block">
-            <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg">My Orders</CardTitle>
-                <CardDescription>View and track your orders</CardDescription>
-              </CardHeader>
-            </Card>
-          </Link>
-          <Link href="/my-account/reviews" className="block">
-            <Card className="hover:shadow-md transition-shadow cursor-pointer h-full border-blue-100 bg-blue-50/30">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Star className="h-5 w-5 text-amber-500 fill-amber-500" />
-                  My Reviews
-                </CardTitle>
-                <CardDescription>View your product reviews</CardDescription>
-              </CardHeader>
-            </Card>
-          </Link>
-          <Link href="/wishlist" className="block">
-            <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Wishlist</CardTitle>
-                <CardDescription>Items you've saved</CardDescription>
-              </CardHeader>
-            </Card>
-          </Link>
-        </div>
-
+      <div className="container mx-auto max-w-7xl px-4 sm:px-6">
         <div className="space-y-6">
           <Card>
             <CardHeader>

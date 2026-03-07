@@ -13,7 +13,7 @@ const PageTitleComponent = ({
   breadcrumbItems: BreadcrumbItem[];
 }) => {
   return (
-    <div className="container mx-auto max-w-6xl my-8">
+    <div className="container mx-auto max-w-7xl my-8">
       <Breadcrumb items={breadcrumbItems} className="mb-3" />
       {/* <h1 className="text-2xl font-semibold text-slate-900">{title}</h1> */}
     </div>
