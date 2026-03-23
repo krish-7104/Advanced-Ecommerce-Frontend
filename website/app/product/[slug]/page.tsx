@@ -40,16 +40,8 @@ import {
   removeFromWishlist,
 } from "@/redux/slices/wishlist.slice";
 import { Rating } from "@/components/ui/rating";
-import { Separator } from "@/components/ui/separator";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 
 const ProductDetailPage = () => {
   const params = useParams();

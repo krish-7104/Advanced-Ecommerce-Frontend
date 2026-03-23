@@ -19,6 +19,7 @@ import { getPageMetadata } from "@/constants/navigation";
 import { Button } from "@/components/ui/button";
 import LoaderComp from "@/components/loader";
 import PermissionGuard from "@/components/shared/permission-guard";
+import { usePermission } from "@/hooks/usePermission";
 import { Badge } from "@/components/ui/badge";
 import { ColumnDef } from "@tanstack/react-table";
 import { Switch } from "@/components/ui/switch";
@@ -53,11 +54,13 @@ const ReviewsPage = () => {
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [reviewToDelete, setReviewToDelete] = useState<string | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
+  const canUpdate = usePermission("reviews.update");
+  const canDelete = usePermission("reviews.delete");
 
   const fetchReviews = async () => {
     setLoading(true);
     try {
-      const res = await apiHelper.get("/admin/review");
+      const res = await apiHelper.get("/review");
       if (!res?.data?.data) throw new Error("Invalid API response");
       setReviews(res.data.data.reviews || []);
     } catch (error: any) {
@@ -120,18 +123,13 @@ const ReviewsPage = () => {
         return (
           <div className="flex flex-col">
             <span className="font-semibold text-slate-900">{product.name}</span>
-            <div className="flex flex-wrap gap-1 mt-1">
-              {Object.entries(row.original.variant.attributes).map(
-                ([key, value]) => (
-                  <span
-                    key={key}
-                    className="text-[10px] text-slate-500 bg-slate-100 px-1 rounded"
-                  >
-                    {key}: {value}
-                  </span>
-                ),
-              )}
-            </div>
+            {Object.entries(row.original.variant.attributes).map(
+              ([key, value]) => (
+                <span key={key} className="text-[10px] me-1 rounded">
+                  {value}
+                </span>
+              ),
+            )}
           </div>
         );
       },
@@ -144,7 +142,7 @@ const ReviewsPage = () => {
           <span className="text-sm font-medium">
             {row.original.user.firstName} {row.original.user.lastName}
           </span>
-          <span className="text-xs text-slate-500">
+          <span className="text-slate-500 text-xs">
             {row.original.user.email}
           </span>
         </div>
@@ -194,12 +192,8 @@ const ReviewsPage = () => {
           <Switch
             checked={row.original.isVisible}
             onCheckedChange={() => toggleVisibility(row.original.id)}
+            disabled={!canUpdate}
           />
-          {row.original.isVisible ? (
-            <Eye className="h-4 w-4 text-emerald-500" />
-          ) : (
-            <EyeOff className="h-4 w-4 text-slate-300" />
-          )}
         </div>
       ),
     },
@@ -207,7 +201,7 @@ const ReviewsPage = () => {
       accessorKey: "createdAt",
       header: "Date",
       cell: ({ row }) => (
-        <span className="text-xs text-slate-500">
+        <span className="text-slate-500">
           {new Date(row.original.createdAt).toLocaleDateString()}
         </span>
       ),
@@ -217,17 +211,19 @@ const ReviewsPage = () => {
       header: "Actions",
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50"
-            onClick={() => {
-              setReviewToDelete(row.original.id);
-              setIsDeleteModalOpen(true);
-            }}
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
+          {canDelete && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50"
+              onClick={() => {
+                setReviewToDelete(row.original.id);
+                setIsDeleteModalOpen(true);
+              }}
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          )}
         </div>
       ),
     },

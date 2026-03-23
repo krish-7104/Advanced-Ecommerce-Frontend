@@ -46,17 +46,16 @@ const AdminUserFormPage = () => {
 
         if (!isNew && id) {
           const { data: user } = await apiHelper.get(`/admins/${id}`);
+          const nameParts = user.name?.split(" ") || [];
           setFormData({
-            firstName: user.firstName,
-            lastName: user.lastName,
+            firstName: nameParts[0] || "",
+            lastName: nameParts.slice(1).join(" ") || "",
             email: user.email,
             phoneNumber: user.phoneNumber || "",
             isActive: user.isActive,
           });
           if (user.permissions) {
-            setSelectedPermissions(
-              user.permissions.map((p: Permission) => p.id),
-            );
+            setSelectedPermissions(user.permissions.map((p: any) => p.id));
           }
         }
       } catch (error: any) {
