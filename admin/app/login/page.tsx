@@ -18,7 +18,7 @@ const Login = () => {
   });
 
   useEffect(() => {
-    if (userData) {
+    if (userData?.id) {
       router.replace("/");
     }
   });
