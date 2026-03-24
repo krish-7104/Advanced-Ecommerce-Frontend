@@ -13,6 +13,7 @@ import StatusBadge from "@/components/shared/status-badge";
 import apiHelper from "@/lib/axios-helper";
 import { toast } from "sonner";
 import { usePermission } from "@/hooks/usePermission";
+import Image from "next/image";
 
 interface ActionCellProps {
   category: Category;
@@ -96,6 +97,25 @@ export const getColumns = (
   masterData: () => void,
   setLoading: React.Dispatch<React.SetStateAction<boolean>>,
 ): ColumnDef<Category>[] => [
+  {
+    accessorKey: "image",
+    header: "Image",
+    cell: ({ row }) => {
+      const image = row.getValue("image") as any;
+      if (image?.url) {
+        return (
+          <Image
+            width={200}
+            height={80}
+            src={image.url}
+            alt="Variant Image"
+            className="w-20 h-20 rounded-md object-cover"
+          />
+        );
+      }
+      return null;
+    },
+  },
   {
     accessorKey: "name",
     header: "Name",

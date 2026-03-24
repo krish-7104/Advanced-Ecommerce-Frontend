@@ -24,7 +24,6 @@ interface ModifyCategoryProps {
   isOpen?: boolean;
   onClose?: () => void;
   masterData: () => void;
-  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const ModifyCategoryDialog = ({
@@ -32,7 +31,6 @@ const ModifyCategoryDialog = ({
   isOpen,
   onClose,
   masterData,
-  setLoading,
 }: ModifyCategoryProps) => {
   const [internalOpen, setInternalOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -44,6 +42,7 @@ const ModifyCategoryDialog = ({
   const [image, setImage] = useState<File | null>(null);
   const [existingImageUrl, setExistingImageUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [dataUpdateLoading, setDataUpdateLoading] = useState(false);
 
   const isEdit = !!category;
   const open = isOpen !== undefined ? isOpen : internalOpen;
@@ -101,9 +100,8 @@ const ModifyCategoryDialog = ({
 
   const createCategory = async () => {
     try {
-      setLoading(true);
       toast.loading("Creating category...");
-
+      setDataUpdateLoading(true);
       const formDataBody = new FormData();
       formDataBody.append("name", formData.name);
       formDataBody.append("slug", formData.slug);
@@ -131,17 +129,17 @@ const ModifyCategoryDialog = ({
     } catch (error: any) {
       toast.dismiss();
       toast.error(
-        error?.response?.data?.message || "Failed to create category"
+        error?.response?.data?.message || "Failed to create category",
       );
     } finally {
-      setLoading(false);
+      setDataUpdateLoading(false);
     }
   };
 
   const updateCategory = async () => {
     try {
-      setLoading(true);
       toast.loading("Updating category...");
+      setDataUpdateLoading(true);
 
       const formDataBody = new FormData();
       formDataBody.append("name", formData.name);
@@ -154,7 +152,7 @@ const ModifyCategoryDialog = ({
 
       const resp = await apiHelper.patch(
         `/category/${category?.id}`,
-        formDataBody
+        formDataBody,
       );
       if (resp.data.statusCode === 200) {
         toast.dismiss();
@@ -173,8 +171,10 @@ const ModifyCategoryDialog = ({
     } catch (error: any) {
       toast.dismiss();
       toast.error(
-        error?.response?.data?.message || "Failed to update category"
+        error?.response?.data?.message || "Failed to update category",
       );
+    } finally {
+      setDataUpdateLoading(false);
     }
   };
 
@@ -189,10 +189,8 @@ const ModifyCategoryDialog = ({
     } catch (error: any) {
       toast.dismiss();
       toast.error(
-        error?.response?.data?.message || "Failed to create category"
+        error?.response?.data?.message || "Failed to create category",
       );
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -323,7 +321,9 @@ const ModifyCategoryDialog = ({
         </div>
 
         <div className="flex justify-end gap-2">
-          <Button type="submit">{isEdit ? "Update" : "Create"}</Button>
+          <Button type="submit" disabled={dataUpdateLoading}>
+            {isEdit ? "Update" : "Create"}
+          </Button>
         </div>
       </form>
     </DialogContent>

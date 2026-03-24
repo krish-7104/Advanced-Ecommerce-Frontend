@@ -33,7 +33,6 @@ import { Button } from "@/components/ui/button";
 const ModifyVariant = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const productId = searchParams.get("productId");
   const variantId = searchParams.get("variantId");
   const metadata = getPageMetadata("/product/variants");
 
@@ -49,7 +48,7 @@ const ModifyVariant = () => {
   const [imageUrl, setImageUrl] = useState("");
 
   const [formData, setFormData] = useState({
-    productId: productId || "",
+    productId: "",
     sku: "",
     price: 0,
     mrp: 0,
@@ -102,6 +101,7 @@ const ModifyVariant = () => {
         setDeletedImageIds([]);
 
         let parsedAttributes = v.attributes || {};
+        debugger;
         if (typeof v.attributes === "string") {
           try {
             parsedAttributes = JSON.parse(v.attributes);
@@ -202,13 +202,12 @@ const ModifyVariant = () => {
   };
 
   useEffect(() => {
-    fetchProductsList();
     if (variantId) {
       fetchVariant(variantId);
-    } else if (productId) {
-      fetchProduct(productId);
+    } else {
+      fetchProductsList();
     }
-  }, [variantId, productId]);
+  }, [variantId]);
 
   // Auto-generate SKU when product or attributes change (only for new variants)
   useEffect(() => {
@@ -256,11 +255,13 @@ const ModifyVariant = () => {
 
   const handleRemoveImage = (index: number) => {
     const item = images[index];
-    if (item && "id" in item) {
+
+    if (item && typeof item === "object" && "id" in item) {
       setDeletedImageIds((prev) => [...prev, item.id]);
     }
 
     setImages((prev) => prev.filter((_, i) => i !== index));
+
     if (index === coverIndex) {
       setCoverIndex(0);
     } else if (index < coverIndex) {
@@ -461,7 +462,7 @@ const ModifyVariant = () => {
 
       <div className="container mx-auto my-4">
         <div className="space-y-4">
-          {!variantId && !productId && (
+          {!variantId && (
             <div className="bg-gray-50 p-6 rounded-xl border border-gray-200 space-y-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700">

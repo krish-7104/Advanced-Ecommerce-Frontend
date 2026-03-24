@@ -6,38 +6,63 @@ const apiHelper = axios.create({
   withCredentials: true,
 });
 
-const ignorePath = ["/auth"];
+let isRefreshing = false;
+let failedQueue: any[] = [];
+
+const processQueue = (error: any) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve();
+    }
+  });
+  failedQueue = [];
+};
 
 apiHelper.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
-    if (
-      ignorePath.includes(originalRequest.url) &&
-      !ignorePath.includes("/auth/about/me")
-    ) {
-      return Promise.reject(error);
-    }
-
-    if (
-      error.response?.status >= 400 &&
-      error.response?.status < 500 &&
-      originalRequest.url?.includes("/auth/refresh")
-    ) {
+    // If refresh itself fails → logout immediately
+    if (originalRequest.url?.includes("/refresh")) {
       window.location.href = "/login";
       return Promise.reject(error);
     }
 
-    // Handle normal API 401
+    // If refresh token invalid → logout (403)
+    if (error.response?.status === 403) {
+      window.location.href = "/login";
+      return Promise.reject(error);
+    }
+
+    // Handle expired access token (401)
     if (error.response?.status === 401 && !originalRequest._retry) {
+      if (isRefreshing) {
+        // Queue requests while refresh is in progress
+        return new Promise((resolve, reject) => {
+          failedQueue.push({
+            resolve: () => resolve(apiHelper(originalRequest)),
+            reject,
+          });
+        });
+      }
+
       originalRequest._retry = true;
+      isRefreshing = true;
+
       try {
-        await apiHelper.get("/auth/refresh");
+        await axios.post("/refresh", {}, { withCredentials: true });
+
+        processQueue(null);
         return apiHelper(originalRequest);
-      } catch {
+      } catch (err) {
+        processQueue(err);
         window.location.href = "/login";
-        return Promise.reject(error);
+        return Promise.reject(err);
+      } finally {
+        isRefreshing = false;
       }
     }
 

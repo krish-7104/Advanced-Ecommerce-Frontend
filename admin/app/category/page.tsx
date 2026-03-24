@@ -64,10 +64,7 @@ const CategoryPage = () => {
               renderButtons={
                 canCreate ? (
                   <>
-                    <ModifyCategoryDialog
-                      masterData={fetchCategories}
-                      setLoading={setLoading}
-                    />
+                    <ModifyCategoryDialog masterData={fetchCategories} />
                   </>
                 ) : undefined
               }

@@ -93,7 +93,7 @@ const CategoriesPage = () => {
                 <section key={parent.id}>
                   <div className="flex items-center justify-between mb-5">
                     <Link
-                      href={`/category/${parent.slug}`}
+                      href={`/products?categoryId=${parent.id}`}
                       className="flex items-center gap-3 group"
                     >
                       {parent.image?.url ? (
@@ -116,7 +116,7 @@ const CategoriesPage = () => {
                       </h2>
                     </Link>
                     <Link
-                      href={`/category/${parent.id}`}
+                      href={`/products?categoryId=${parent.id}`}
                       className="text-sm text-slate-500 hover:text-slate-700 flex items-center gap-1"
                     >
                       View All <ChevronRight className="h-4 w-4" />
@@ -128,7 +128,7 @@ const CategoriesPage = () => {
                       {subcategories.map((sub) => (
                         <Link
                           key={sub.id}
-                          href={`/category/${sub.id}`}
+                          href={`/products?categoryId=${sub.id}`}
                           className="shrink-0 w-28 group"
                         >
                           <div className="aspect-square rounded-lg bg-slate-50 overflow-hidden mb-2 border border-slate-50 relative">

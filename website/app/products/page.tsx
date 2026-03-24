@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import { Package, ChevronDown } from "lucide-react";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
@@ -29,80 +30,96 @@ const SORT_OPTIONS = [
   { value: "name", label: "Name A–Z" },
 ] as const;
 
-export default function ProductsPage() {
+function ProductsContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   const [products, setProducts] = useState<ProductVariantResponse[]>([]);
   const [categories, setCategories] = useState<CategoryResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState<PaginationInfo | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [sort, setSort] = useState<(typeof SORT_OPTIONS)[number]["value"]>("newest");
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 500000]);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [inStockOnly, setInStockOnly] = useState(false);
+
+  const [currentPage, setCurrentPage] = useState(
+    Number(searchParams.get("page")) || 1
+  );
+  const [sort, setSort] = useState<(typeof SORT_OPTIONS)[number]["value"]>(
+    (searchParams.get("sort") as any) || "newest"
+  );
+  const [priceRange, setPriceRange] = useState<[number, number]>([
+    Number(searchParams.get("minPrice")) || 0,
+    Number(searchParams.get("maxPrice")) || 500000,
+  ]);
+  const initialCategory = searchParams.get("categoryId");
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(
+    initialCategory ? [initialCategory] : []
+  );
+  const [inStockOnly, setInStockOnly] = useState(
+    searchParams.get("inStock") === "true"
+  );
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
+        const params = new URLSearchParams();
+        params.set("page", currentPage.toString());
+        params.set("limit", "32");
+        if (sort !== "newest") params.set("sort", sort);
+        if (priceRange[0] > 0) params.set("minPrice", priceRange[0].toString());
+        if (priceRange[1] < 500000) params.set("maxPrice", priceRange[1].toString());
+        if (selectedCategories.length > 0) {
+          params.set("categoryId", selectedCategories[0]);
+        }
+        if (inStockOnly) params.set("inStock", "true");
+
+        // Sync URL without reloading
+        router.replace(`?${params.toString()}`, { scroll: false });
+
         const response = await axios.get(
-          `${BASE_API_URL}/product?page=${currentPage}&limit=32`
+          `${BASE_API_URL}/product?${params.toString()}`
         );
         if (response.data?.data && Array.isArray(response.data.data)) {
           setProducts(response.data.data);
+        } else {
+          setProducts([]);
         }
         if (response.data?.pagination) {
           setPagination(response.data.pagination);
         }
       } catch (err) {
+        console.error("Error fetching products", err);
       } finally {
         setLoading(false);
       }
     };
     fetchProducts();
-  }, [currentPage]);
+  }, [currentPage, sort, priceRange, selectedCategories, inStockOnly, router]);
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get(`${BASE_API_URL}/category?level=0`);
+        const response = await axios.get(`${BASE_API_URL}/category`);
         if (response.data?.data) setCategories(response.data.data);
       } catch (err) {}
     };
     fetchCategories();
   }, []);
 
-  const filteredProducts = useMemo(() => {
-    let list = [...products];
-    list = list.filter((p) => {
-      const price = Number(p.price);
-      if (price < priceRange[0] || price > priceRange[1]) return false;
-      if (selectedCategories.length && p.product?.category?.id) {
-        if (!selectedCategories.includes(p.product.category.id)) return false;
-      }
-      if (inStockOnly && p.stockAvailable <= 0) return false;
-      return true;
-    });
-    if (sort === "price-asc")
-      list.sort((a, b) => Number(a.price) - Number(b.price));
-    if (sort === "price-desc")
-      list.sort((a, b) => Number(b.price) - Number(a.price));
-    if (sort === "name")
-      list.sort((a, b) =>
-        (a.product?.name ?? "").localeCompare(b.product?.name ?? "")
-      );
-    return list;
-  }, [products, priceRange, selectedCategories, inStockOnly, sort]);
-
   const categoryToggle = (id: string) => {
+    // Only allow one category selection for simplicity corresponding to backend "categoryId" schema,
+    // or toggle off if same category is clicked again.
     setSelectedCategories((prev) =>
-      prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id]
+      prev.includes(id) ? [] : [id]
     );
+    setCurrentPage(1); // Reset page on filter change
   };
 
   const clearFilters = () => {
     setPriceRange([0, 500000]);
     setSelectedCategories([]);
     setInStockOnly(false);
+    setSort("newest");
+    setCurrentPage(1);
   };
 
   const getPageNumbers = () => {
@@ -139,13 +156,21 @@ export default function ProductsPage() {
               id: c.id,
               name: c.name,
               slug: c.slug,
+              parentId: c.parentId,
+              level: c.level,
             }))}
             priceRange={priceRange}
-            onPriceChange={setPriceRange}
+            onPriceChange={(range) => {
+              setPriceRange(range);
+              setCurrentPage(1);
+            }}
             selectedCategories={selectedCategories}
             onCategoryToggle={categoryToggle}
             inStockOnly={inStockOnly}
-            onInStockToggle={setInStockOnly}
+            onInStockToggle={(val) => {
+              setInStockOnly(val);
+              setCurrentPage(1);
+            }}
             onClear={clearFilters}
           />
 
@@ -154,7 +179,7 @@ export default function ProductsPage() {
               <p className="text-sm text-slate-600">
                 {loading
                   ? "Loading..."
-                  : `${filteredProducts.length} product${filteredProducts.length !== 1 ? "s" : ""}`}
+                  : `${products.length} product${products.length !== 1 ? "s" : ""}`}
               </p>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -174,7 +199,10 @@ export default function ProductsPage() {
                   {SORT_OPTIONS.map((opt) => (
                     <DropdownMenuItem
                       key={opt.value}
-                      onClick={() => setSort(opt.value)}
+                      onClick={() => {
+                        setSort(opt.value);
+                        setCurrentPage(1);
+                      }}
                       className="rounded-lg cursor-pointer"
                     >
                       {opt.label}
@@ -194,10 +222,10 @@ export default function ProductsPage() {
                   </div>
                 ))}
               </div>
-            ) : filteredProducts.length > 0 ? (
+            ) : products.length > 0 ? (
               <>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-                  {filteredProducts.map((product) => (
+                  {products.map((product) => (
                     <ProductCard key={product.id} product={product} />
                   ))}
                 </div>
@@ -253,5 +281,19 @@ export default function ProductsPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ProductsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-white flex items-center justify-center">
+          Loading...
+        </div>
+      }
+    >
+      <ProductsContent />
+    </Suspense>
   );
 }

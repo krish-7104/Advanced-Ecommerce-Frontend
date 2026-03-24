@@ -8,6 +8,12 @@ export interface Category {
   isActive?: boolean;
   createdAt: string | Date;
   updatedAt: string | Date;
+  image?: {
+    fileName: string;
+    id: string;
+    isPrimary: boolean;
+    url: string;
+  };
   _count: { children: number; products: number };
 }
 
