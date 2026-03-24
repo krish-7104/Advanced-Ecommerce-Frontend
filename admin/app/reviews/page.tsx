@@ -125,7 +125,7 @@ const ReviewsPage = () => {
             <span className="font-semibold text-slate-900">{product.name}</span>
             {Object.entries(row.original.variant.attributes).map(
               ([key, value]) => (
-                <span key={key} className="text-[10px] me-1 rounded">
+                <span key={key} className="text-[12px] me-1 rounded">
                   {value}
                 </span>
               ),
@@ -133,6 +133,7 @@ const ReviewsPage = () => {
           </div>
         );
       },
+      size: 300,
     },
     {
       accessorKey: "user",
