@@ -99,7 +99,7 @@ const ReviewsPage = () => {
 
     setIsDeleting(true);
     try {
-      const res = await apiHelper.delete(`/admin/review/${reviewToDelete}`);
+      const res = await apiHelper.delete(`/review/${reviewToDelete}`);
       if (res.data?.success) {
         toast.success(res.data.message || "Review deleted successfully");
         setReviews((prev) => prev.filter((r) => r.id !== reviewToDelete));
