@@ -2,19 +2,25 @@
 import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import axios from "axios";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import Link from "next/link";
 import { BASE_API_URL } from "@/lib/api-helper";
 import { setUserHandler } from "@/redux/actions";
 import apiHelper from "@/lib/axios-helper";
+import { useSelector } from "react-redux";
 const Login = () => {
   const router = useRouter();
-
+  const userData = useSelector((state: any) => state?.userData);
   const [formData, setFormData] = React.useState({
     email: "",
     password: "",
+  });
+
+  useEffect(() => {
+    if (userData) {
+      router.replace("/");
+    }
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
