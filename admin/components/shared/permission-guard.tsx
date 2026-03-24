@@ -4,20 +4,13 @@ import { useAllPermissions } from "@/hooks/usePermission";
 import { ShieldOff } from "lucide-react";
 
 interface PermissionGuardProps {
-  /** Single permission code required, e.g. "categories.view" */
   permission: string;
   children: React.ReactNode;
 }
 
-/**
- * Renders children only if the current admin has the required permission.
- * Shows a friendly 403 screen otherwise.
- */
 const PermissionGuard = ({ permission, children }: PermissionGuardProps) => {
   const permissions = useAllPermissions();
 
-  // While permissions are still loading (empty id = not hydrated yet)
-  // allow render — the API will reject unauthorized requests anyway
   if (permissions.length === 0) {
     return <>{children}</>;
   }
@@ -37,9 +30,6 @@ const PermissionGuard = ({ permission, children }: PermissionGuardProps) => {
             administrator to request access.
           </p>
         </div>
-        <p className="text-xs text-gray-400 font-mono bg-gray-100 px-3 py-1 rounded">
-          Required: {permission}
-        </p>
       </div>
     );
   }
