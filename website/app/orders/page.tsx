@@ -10,11 +10,7 @@ import { Package, Calendar, MapPin, ChevronRight, Clock } from "lucide-react";
 import Loader from "@/components/loader";
 import Link from "next/link";
 import Image from "next/image";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/empty-state";
 import { toast } from "sonner";
@@ -40,7 +36,6 @@ const OrdersPage = () => {
         }
       } catch (error) {
         console.error("Failed to fetch orders:", error);
-        toast.error("Failed to load orders");
       } finally {
         setLoading(false);
       }
@@ -98,9 +93,7 @@ const OrdersPage = () => {
   return (
     <div className="container max-w-7xl mx-auto px-4 sm:px-6 py-16">
       <h1 className="text-3xl font-bold text-slate-900 mb-2">My Orders</h1>
-      <p className="text-slate-600 mb-10">
-        View and track your order history.
-      </p>
+      <p className="text-slate-600 mb-10">View and track your order history.</p>
 
       {orders.length === 0 ? (
         <div className="rounded-2xl bg-slate-50/50 shadow-[var(--shadow-card)] overflow-hidden">
@@ -117,12 +110,12 @@ const OrdersPage = () => {
           {orders.map((order) => {
             const orderTotal = order.items.reduce(
               (sum, item) => sum + item.price * item.quantity,
-              0
+              0,
             );
             return (
               <Card
                 key={order.id}
-                className="overflow-hidden rounded-2xl shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-soft)] transition-all duration-200"
+                className="overflow-hidden rounded-2xl `shadow-(--shadow-card) hover:shadow-(--shadow-soft) transition-all duration-200"
               >
                 <CardHeader className="bg-slate-50/50 px-6 sm:px-8 py-6">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -134,7 +127,7 @@ const OrdersPage = () => {
                         <span
                           className={cn(
                             "inline-flex items-center px-3 py-1 text-xs font-medium",
-                            getStatusStyles(order.status)
+                            getStatusStyles(order.status),
                           )}
                         >
                           {order.status}
