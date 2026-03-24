@@ -1,5 +1,7 @@
 import axios from "axios";
 import { BASE_API_URL } from "./api-helper";
+import { store } from "../redux/store";
+import { logout } from "../redux/slices/user.slice";
 
 const apiHelper = axios.create({
   baseURL: BASE_API_URL,
@@ -26,6 +28,7 @@ apiHelper.interceptors.response.use(
         await apiHelper.get("/auth/refresh");
         return apiHelper(originalRequest);
       } catch {
+        store.dispatch(logout());
         // Return original error, not refresh error
         return Promise.reject(error);
       }
