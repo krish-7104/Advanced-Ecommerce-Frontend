@@ -11,9 +11,7 @@ This repository manages two separate Next.js workspaces:
 - **Language:** TypeScript
 - **Styling:** Tailwind CSS
 - **State Management:** Redux Toolkit
-- **UI Components:** Radix UI / shadcn-like foundations
-- **API Fetching:** Axios
-
+- **UI Components:** Shadcn
 ---
 
 ## 1. Admin Dashboard (`/admin`)
