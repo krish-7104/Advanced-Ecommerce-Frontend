@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import axios from "axios";
+import apiHelper from "@/helper/axios-helper";
 import { Skeleton } from "@/components/ui/skeleton";
 import { BASE_API_URL } from "@/helper/api-helper";
 import { ProductResponse, ProductVariantResponse } from "@/types/catalog.types";
@@ -39,8 +39,8 @@ const CategoriesPage = () => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(
-          `${BASE_API_URL}/product/category/${slug}`,
+        const response = await apiHelper.get(
+          `/product/category/${slug}`,
         );
         if (response.data?.data) {
           setProducts(response.data.data);

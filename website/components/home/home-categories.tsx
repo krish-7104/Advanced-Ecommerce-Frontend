@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Grid3X3, ChevronRight } from "lucide-react";
-import axios from "axios";
+import apiHelper from "@/helper/axios-helper";
 import { BASE_API_URL } from "@/helper/api-helper";
 import { CategoryResponse } from "@/types/catalog.types";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -17,7 +17,7 @@ export const HomeCategories = () => {
     const fetchCategories = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`${BASE_API_URL}/category?level=0`);
+        const response = await apiHelper.get(`/category?level=0`);
         if (response.data?.data) {
           setCategories(response.data.data);
         }

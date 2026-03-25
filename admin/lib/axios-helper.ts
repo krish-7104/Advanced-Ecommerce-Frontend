@@ -31,6 +31,14 @@ apiHelper.interceptors.response.use(
       return Promise.reject(error);
     }
 
+    // Ignore auth routes
+    if (
+      originalRequest.url?.includes("/auth/login") ||
+      originalRequest.url?.includes("/auth/register")
+    ) {
+      return Promise.reject(error);
+    }
+
     // If refresh token invalid → logout (403)
     if (error.response?.status === 403) {
       window.location.href = "/login";
@@ -53,7 +61,7 @@ apiHelper.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        await axios.post("/refresh", {}, { withCredentials: true });
+        await axios.get(`${BASE_API_URL}/auth/refresh`, { withCredentials: true });
 
         processQueue(null);
         return apiHelper(originalRequest);

@@ -9,13 +9,24 @@ const apiHelper = axios.create({
 apiHelper.interceptors.response.use(
   (res) => res,
   async (error) => {
-    if (error.response?.status === 401) {
+    const originalRequest = error.config;
+
+    if (
+      originalRequest.url?.includes("/auth/login") ||
+      originalRequest.url?.includes("/auth/register") ||
+      originalRequest.url?.includes("/auth/refresh")
+    ) {
+      return Promise.reject(error);
+    }
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
       try {
         await apiHelper.get("/auth/refresh");
 
-        return apiHelper(error.config); // retry
+        return apiHelper(originalRequest); // retry
       } catch {
-        window.location.href = "/login";
+        // Let the promise reject so caller handles the 401
       }
     }
 

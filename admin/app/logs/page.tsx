@@ -15,6 +15,7 @@ const LogsPage = () => {
   const metadata = getPageMetadata("/logs");
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const canViewLogs = usePermission("logs.view");
 
   const getAuditLogs = async () => {
     setLoading(true);
@@ -33,10 +34,23 @@ const LogsPage = () => {
   };
 
   useEffect(() => {
-    getAuditLogs();
-  }, []);
+    if (canViewLogs) {
+      getAuditLogs();
+    }
+  }, [canViewLogs]);
 
   const columns = getColumns();
+
+  if (!canViewLogs) {
+    return (
+      <section className="w-full min-h-screen bg-white flex justify-center items-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-red-600 mb-2">Access Denied</h2>
+          <p className="text-gray-500">Only Super Admins can view audit logs.</p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="w-full min-h-screen bg-white">
@@ -54,7 +68,8 @@ const LogsPage = () => {
           <GenericDataTable
             columns={columns}
             data={categories}
-            searchPlaceholder="Search audit logs..."
+            searchKey="action"
+            searchPlaceholder="Search audit logs by action..."
           />
         </div>
       )}

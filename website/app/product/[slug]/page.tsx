@@ -7,7 +7,7 @@ import {
   useRouter,
   useSearchParams,
 } from "next/navigation";
-import axios from "axios";
+import apiHelper from "@/helper/axios-helper";
 import Image from "next/image";
 import {
   Package,
@@ -98,8 +98,8 @@ const ProductDetailPage = () => {
       if (!selectedVariant) return;
       try {
         setFetchingReviews(true);
-        const response = await axios.get(
-          `${BASE_API_URL}/review/variant/${selectedVariant.id}`,
+        const response = await apiHelper.get(
+          `/review/variant/${selectedVariant.id}`,
         );
         if (response.data?.data) {
           setReviews(response.data.data);
@@ -122,23 +122,21 @@ const ProductDetailPage = () => {
       setSubmittingReview(true);
       let response;
       if (editingReviewId) {
-        response = await axios.patch(
-          `${BASE_API_URL}/review/${editingReviewId}`,
+        response = await apiHelper.patch(
+          `/review/${editingReviewId}`,
           reviewForm,
-          { withCredentials: true },
         );
       } else {
-        response = await axios.post(
-          `${BASE_API_URL}/review/${selectedVariant.id}`,
+        response = await apiHelper.post(
+          `/review/${selectedVariant.id}`,
           reviewForm,
-          { withCredentials: true },
         );
       }
 
       if (response.data?.success) {
         // Refresh reviews
-        const res = await axios.get(
-          `${BASE_API_URL}/review/variant/${selectedVariant.id}`,
+        const res = await apiHelper.get(
+          `/review/variant/${selectedVariant.id}`,
         );
         setReviews(res.data.data);
         setIsReviewDialogOpen(false);
@@ -166,11 +164,8 @@ const ProductDetailPage = () => {
     if (!confirm("Are you sure you want to delete this review?")) return;
 
     try {
-      const response = await axios.delete(
-        `${BASE_API_URL}/review/${reviewId}`,
-        {
-          withCredentials: true,
-        },
+      const response = await apiHelper.delete(
+        `/review/${reviewId}`
       );
       if (response.data?.success) {
         setReviews((prev) => prev.filter((r) => r.id !== reviewId));
@@ -199,8 +194,8 @@ const ProductDetailPage = () => {
     const fetchProduct = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(
-          `${BASE_API_URL}/product/slug/${slug}`,
+        const response = await apiHelper.get(
+          `/product/slug/${slug}`,
         );
         if (response.data?.data) {
           const productData = response.data.data;

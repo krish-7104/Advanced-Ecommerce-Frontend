@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import axios from "axios";
+import apiHelper from "@/helper/axios-helper";
 import { Package, ChevronDown } from "lucide-react";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
@@ -75,8 +75,8 @@ function ProductsContent() {
         // Sync URL without reloading
         router.replace(`?${params.toString()}`, { scroll: false });
 
-        const response = await axios.get(
-          `${BASE_API_URL}/product?${params.toString()}`
+        const response = await apiHelper.get(
+          `/product?${params.toString()}`
         );
         if (response.data?.data && Array.isArray(response.data.data)) {
           setProducts(response.data.data);
@@ -98,7 +98,7 @@ function ProductsContent() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get(`${BASE_API_URL}/category`);
+        const response = await apiHelper.get(`/category`);
         if (response.data?.data) setCategories(response.data.data);
       } catch (err) {}
     };

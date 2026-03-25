@@ -2,7 +2,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import axios from "axios";
+import apiHelper from "@/lib/axios-helper";
 import { toast } from "sonner";
 
 const ResetPassword = () => {
@@ -22,7 +22,8 @@ const ResetPassword = () => {
     let loadingToastId: string | number | undefined;
     try {
       loadingToastId = toast.loading("Initiating Password Reset..");
-      const resp = await axios.post("/api/auth/forget", { email });
+      // Using absolute URL to bypass apiHelper's default baseURL
+      const resp = await apiHelper.post(window.location.origin + "/api/auth/forget", { email });
       if (loadingToastId) {
         toast.dismiss(loadingToastId);
       }

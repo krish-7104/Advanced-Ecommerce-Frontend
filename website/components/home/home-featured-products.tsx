@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
-import axios from "axios";
+import apiHelper from "@/helper/axios-helper";
 import { BASE_API_URL } from "@/helper/api-helper";
 import { ProductVariantResponse } from "@/types/catalog.types";
 import ProductCard from "../product-card";
@@ -17,8 +17,8 @@ export const HomeFeaturedProducts = () => {
     const fetchFeaturedProducts = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(
-          `${BASE_API_URL}/product?featured=true&limit=4`
+        const response = await apiHelper.get(
+          `/product?featured=true&limit=4`
         );
         if (response.data?.data && Array.isArray(response.data.data)) {
           setProducts(response.data.data);
