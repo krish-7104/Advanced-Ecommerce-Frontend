@@ -4,6 +4,7 @@ import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 const GREETINGS = {
   morning: "Good Morning",
   afternoon: "Good Afternoon",
@@ -47,6 +48,10 @@ const Home = () => {
     stockAdded: { total: 0, dayChange: 0, dayChangePercentage: 0 },
     products: { total: 0, dayChange: 0, dayChangePercentage: 0 },
   });
+
+  const [orderStatusData, setOrderStatusData] = useState<any[]>([]);
+  const [topProducts, setTopProducts] = useState<any[]>([]);
+
   useEffect(() => {
     getGreetText();
   }, []);
@@ -61,8 +66,10 @@ const Home = () => {
       setGreeting(GREETINGS.evening);
     }
   };
+
   useEffect(() => {
     getStatsForCards();
+    fetchGraphData();
   }, []);
 
   const getChangeMeta = (value: number, percentage: number) => {
@@ -103,6 +110,26 @@ const Home = () => {
       setLoading(false);
     }
   };
+
+  const fetchGraphData = async () => {
+    try {
+      const [statusRes, productsRes] = await Promise.all([
+        apiHelper.get("/dashboard/orders/status-graph"),
+        apiHelper.get("/dashboard/products/top-selling?limit=5"),
+      ]);
+      
+      if (statusRes?.data?.statusCode === 200) {
+        setOrderStatusData(statusRes.data.data);
+      }
+      if (productsRes?.data?.statusCode === 200) {
+        setTopProducts(productsRes.data.data);
+      }
+    } catch (e) {
+      console.error("Failed to load graphs", e);
+    }
+  };
+
+  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#A28CF0', '#F368E0', '#FF3F3F'];
 
   return (
     <main className="mx-auto bg-[#f6f6f6] flex justify-center h-[100vh] container overflow-x-hidden">
@@ -226,6 +253,67 @@ const Home = () => {
                   }
                 </p>
               </div>
+            </div>
+          </section>
+
+          {/* Graphs Section */}
+          <section className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6 w-full mb-10">
+            {/* Order Status Distribution Pie Chart */}
+            <div className="bg-white shadow-sm border p-6 rounded-xl flex flex-col h-[400px]">
+              <p className="font-semibold text-lg text-slate-800 mb-6">Order Status Distribution</p>
+              {orderStatusData.length > 0 ? (
+                <div className="flex-1 w-full h-full min-h-[300px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={orderStatusData}
+                        dataKey="count"
+                        nameKey="status"
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={100}
+                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                      >
+                        {orderStatusData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                      <Legend />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              ) : (
+                <div className="flex-1 flex items-center justify-center">
+                  <p className="text-slate-400">No data available</p>
+                </div>
+              )}
+            </div>
+
+            {/* Top Selling Products Bar Chart */}
+            <div className="bg-white shadow-sm border p-6 rounded-xl flex flex-col h-[400px]">
+              <p className="font-semibold text-lg text-slate-800 mb-6">Top Selling Variants</p>
+              {topProducts.length > 0 ? (
+                <div className="flex-1 w-full h-full min-h-[300px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={topProducts}
+                      margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="sku" />
+                      <YAxis />
+                      <Tooltip formatter={(val, name) => [val, 'Total Sold']} labelFormatter={(label) => `SKU: ${label}`} />
+                      <Legend />
+                      <Bar dataKey="totalSold" fill="#6366f1" radius={[4, 4, 0, 0]} name="Units Sold" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              ) : (
+                <div className="flex-1 flex items-center justify-center">
+                  <p className="text-slate-400">No data available</p>
+                </div>
+              )}
             </div>
           </section>
         </section>
