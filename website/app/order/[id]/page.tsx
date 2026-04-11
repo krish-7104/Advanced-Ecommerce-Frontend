@@ -60,9 +60,7 @@ export default function OrderDetailsPage() {
         if (payload?.outcome === "cancelled_unpaid" && payload?.order) {
           setOrder(payload.order as Order);
         } else {
-          setOrder((prev) =>
-            prev ? { ...prev, status: "REFUNDED" } : null,
-          );
+          setOrder((prev) => (prev ? { ...prev, status: "REFUNDED" } : null));
         }
         toast.success(response.data.message || "Done");
         setIsDialogOpen(false);
@@ -73,8 +71,8 @@ export default function OrderDetailsPage() {
         error &&
         typeof error === "object" &&
         "response" in error &&
-        (error as { response?: { data?: { message?: string } } }).response
-          ?.data?.message;
+        (error as { response?: { data?: { message?: string } } }).response?.data
+          ?.message;
       toast.error(typeof msg === "string" ? msg : "Request failed");
     } finally {
       setIsRefunding(false);
@@ -139,8 +137,7 @@ export default function OrderDetailsPage() {
   const getStatusColor = (status: string) => {
     const s = status?.toLowerCase();
     if (s === "pending") return "bg-amber-100 text-amber-900";
-    if (["paid", "packed"].includes(s))
-      return "bg-sky-100 text-sky-900";
+    if (["paid", "packed"].includes(s)) return "bg-sky-100 text-sky-900";
     if (s === "shipped") return "bg-indigo-100 text-indigo-900";
     if (s === "delivered") return "bg-emerald-100 text-emerald-900";
     if (s === "cancelled" || s === "refunded")
@@ -152,8 +149,7 @@ export default function OrderDetailsPage() {
     o.items.reduce((acc, item) => acc + Number(item.price) * item.quantity, 0);
 
   const canRefundOrCancel =
-    order &&
-    ["PENDING", "PAID", "PACKED"].includes(order.status);
+    order && ["PENDING", "PAID", "PACKED"].includes(order.status);
 
   if (loading) {
     return (
@@ -181,15 +177,17 @@ export default function OrderDetailsPage() {
     <div className="container max-w-2xl mx-auto px-4 py-8">
       {(showPaidBanner || paymentStatus === "success") &&
         order.status === "PAID" && (
-        <div className="mb-6 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900 flex gap-2">
-          <CheckCircle2 className="h-5 w-5 shrink-0" />
-          <span>Payment received. Your order is paid.</span>
-        </div>
-      )}
+          <div className="mb-6 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900 flex gap-2">
+            <CheckCircle2 className="h-5 w-5 shrink-0" />
+            <span>Payment received. Your order is paid.</span>
+          </div>
+        )}
       {paymentStatus === "failure" && (
         <div className="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-900 flex gap-2">
           <XCircle className="h-5 w-5 shrink-0" />
-          <span>Payment did not go through. You can try again from checkout.</span>
+          <span>
+            Payment did not go through. You can try again from checkout.
+          </span>
         </div>
       )}
 
@@ -231,7 +229,7 @@ export default function OrderDetailsPage() {
                   onChange={(e) => setRefundReason(e.target.value)}
                 />
               </div>
-              <DialogFooter className="gap-2 sm:gap-0">
+              <DialogFooter className="gap-2">
                 <Button
                   variant="outline"
                   onClick={() => setIsDialogOpen(false)}
@@ -260,7 +258,9 @@ export default function OrderDetailsPage() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <p className="text-lg font-semibold">{formatPrice(lineTotal(order))}</p>
+          <p className="text-lg font-semibold">
+            {formatPrice(lineTotal(order))}
+          </p>
           <div className="space-y-4">
             {order.items.map((item) => (
               <Link
