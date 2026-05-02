@@ -78,7 +78,6 @@ const ActionCell = ({ category, masterData, setLoading }: ActionCellProps) => {
         isOpen={isEditOpen}
         onClose={() => setIsEditOpen(false)}
         masterData={masterData}
-        setLoading={setLoading}
       />
 
       <DeleteModal
