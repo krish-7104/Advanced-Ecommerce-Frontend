@@ -1,6 +1,6 @@
 "use client";
 import apiHelper from "@/lib/axios-helper";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
 import {
@@ -25,6 +25,7 @@ import {
   Package as PackageIcon,
   BarChart3,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 const GREETINGS = {
   morning: "Good Morning",
   afternoon: "Good Afternoon",
@@ -35,6 +36,7 @@ const Home = () => {
   const [greet, setGreeting] = useState(GREETINGS.morning);
   const userData = useSelector((state: any) => state?.userData);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
   const [stats, setStats] = useState<{
     users: {
       total: number;
@@ -89,12 +91,24 @@ const Home = () => {
 
     socket.on(
       "dashboard_notification",
-      (data: { title: string; message: string; type: "success" | "info" }) => {
-        if (data.type === "success") {
-          toast.success(data.title, { description: data.message });
-        } else {
-          toast.info(data.title, { description: data.message });
-        }
+      (data: {
+        title: string;
+        message: string;
+        type: "success" | "info";
+        orderId?: string;
+      }) => {
+        toast.custom((t) => (
+          <div
+            className="shadow text-slate-900 bg-white p-4 rounded-lg cursor-pointer border border-slate-200"
+            onClick={() => {
+              toast.dismiss(t);
+              if (data.orderId) router.push(`/orders/${data.orderId}`);
+            }}
+          >
+            <h3 className="font-bold">{data.title}</h3>
+            <p className="text-sm">{data.message}</p>
+          </div>
+        ));
       },
     );
 
