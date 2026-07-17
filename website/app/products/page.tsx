@@ -56,6 +56,7 @@ function ProductsContent() {
   const [inStockOnly, setInStockOnly] = useState(
     searchParams.get("inStock") === "true"
   );
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "");
 
   useEffect(() => {
     const fetchProducts = async () => {

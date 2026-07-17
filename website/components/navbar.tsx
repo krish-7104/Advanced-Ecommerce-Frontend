@@ -6,8 +6,9 @@ import { RootState } from "@/redux/store";
 import { logout } from "@/redux/slices/user.slice";
 import apiHelper from "@/helper/axios-helper";
 import { toast } from "sonner";
-import { Package, LogOut, ShoppingCart, User, Heart, Star } from "lucide-react";
+import { Package, LogOut, ShoppingCart, User, Heart, Star, Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,6 +20,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { WishlistSidebar } from "@/components/wishlist-sidebar";
 import { CartSidebar } from "@/components/cart-sidebar";
+import { useState, useRef, useEffect, FormEvent } from "react";
 
 const Navbar = () => {
   const router = useRouter();
@@ -28,6 +30,37 @@ const Navbar = () => {
   const { user, isAuthenticated } = useSelector(
     (state: RootState) => state.user,
   );
+
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (searchOpen) {
+      setTimeout(() => searchInputRef.current?.focus(), 50);
+    }
+  }, [searchOpen]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setSearchOpen((prev) => !prev);
+      }
+      if (e.key === "Escape") setSearchOpen(false);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  const handleSearch = (e: FormEvent) => {
+    e.preventDefault();
+    const q = searchQuery.trim();
+    if (!q) return;
+    setSearchOpen(false);
+    setSearchQuery("");
+    router.push(`/products?search=${encodeURIComponent(q)}`);
+  };
 
   const handleLogout = async () => {
     try {
@@ -60,6 +93,40 @@ const Navbar = () => {
     pathname === "/verify-email";
 
   return (
+    <>
+      {searchOpen && (
+        <div
+          className="fixed inset-0 z-[60] flex items-start justify-center pt-24 px-4 bg-slate-900/40 backdrop-blur-sm"
+          onClick={() => setSearchOpen(false)}
+        >
+          <div
+            className="w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <form onSubmit={handleSearch} className="flex items-center gap-3 px-4 py-3 border-b border-slate-100">
+              <Search className="h-5 w-5 text-slate-400 shrink-0" />
+              <Input
+                ref={searchInputRef}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search products…"
+                className="border-0 shadow-none focus-visible:ring-0 text-base p-0 h-auto"
+              />
+              <button
+                type="button"
+                onClick={() => setSearchOpen(false)}
+                className="shrink-0 text-slate-400 hover:text-slate-600"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </form>
+            <div className="px-4 py-2 text-xs text-slate-400">
+              Press <kbd className="px-1.5 py-0.5 bg-slate-100 rounded text-slate-500 font-mono">Enter</kbd> to search · <kbd className="px-1.5 py-0.5 bg-slate-100 rounded text-slate-500 font-mono">Esc</kbd> to close
+            </div>
+          </div>
+        </div>
+      )}
+
     <header className="sticky top-0 z-50 w-full border-b border-slate-100 bg-white/95 backdrop-blur supports-backdrop-filter:bg-white/80">
       <div className="container max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex h-16 items-center justify-between gap-4">
@@ -69,6 +136,15 @@ const Navbar = () => {
             </span>
           </Link>
           <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-9 w-9 text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+              onClick={() => setSearchOpen(true)}
+              aria-label="Search"
+            >
+              <Search className="h-5 w-5" />
+            </Button>
             <WishlistSidebar />
 
             {isAuthenticated && <CartSidebar />}
@@ -160,6 +236,7 @@ const Navbar = () => {
         </div>
       </div>
     </header>
+    </>
   );
 };
 
